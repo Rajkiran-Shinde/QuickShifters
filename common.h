@@ -7,5 +7,7 @@ typedef unsigned long  uint32_t;
 
 #define TRUE    1
 #define FALSE   0
-
+/* Cosmic Interrupt Handler Macro */
+#define INTERRUPT_HANDLER(f, irq) @far @interrupt void f(void)
 #endif
+

@@ -1,5 +1,5 @@
 
-Map of Debug\quickshifter.sm8 from link file Debug\quickshifter.lkf - Fri Aug  7 19:58:25 2026
+Map of Debug\quickshifter.sm8 from link file Debug\quickshifter.lkf - Fri Aug  7 23:17:36 2026
 
 
                                --------
@@ -7,18 +7,19 @@ Map of Debug\quickshifter.sm8 from link file Debug\quickshifter.lkf - Fri Aug  7
                                --------
 
 start 00008080 end 00008080 length     0 segment .const
-start 00008083 end 00008249 length   454 segment .text
+start 0000808c end 00008429 length   925 segment .text
 start 00004000 end 00004000 length     0 segment .eeprom
-start 00000000 end 00000000 length     0 segment .bsct
-start 00000000 end 00000006 length     6 segment .ubsct
-start 00000006 end 00000006 length     0 segment .bit
-start 00000006 end 00000006 length     0 segment .share
+start 00000000 end 00000004 length     4 segment .bsct, initialized
+start 00008088 end 0000808c length     4 segment .bsct, from
+start 00000004 end 0000002c length    40 segment .ubsct
+start 0000002c end 0000002c length     0 segment .bit
+start 0000002c end 0000002c length     0 segment .share
 start 00000100 end 00000100 length     0 segment .data
 start 00000100 end 00000100 length     0 segment .bss
-start 00000000 end 0000042f length  1071 segment .info.
-start 00000000 end 00000a58 length  2648 segment .debug
+start 00000000 end 000005b7 length  1463 segment .info.
+start 00000000 end 00001137 length  4407 segment .debug
 start 00008000 end 00008080 length   128 segment .const
-start 00008080 end 00008083 length     3 segment .init
+start 00008080 end 00008088 length     8 segment .init
 
 
                                -------
@@ -26,57 +27,89 @@ start 00008080 end 00008083 length     3 segment .init
                                -------
 
 C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8:
-start 00008083 end 000080d3 length    80 section .text
+start 0000808c end 000080dc length    80 section .text
 start 00000100 end 00000100 length     0 section .bss
-start 00000000 end 00000000 length     0 section .ubsct
+start 00000004 end 00000004 length     0 section .ubsct
 start 00000000 end 00000033 length    51 section .info.
 
 Debug\button.o:
-start 000080d3 end 00008106 length    51 section .text
-start 00000000 end 000000f8 length   248 section .debug
+start 000080dc end 00008181 length   165 section .text
+start 00000004 end 0000000f length    11 section .ubsct
+start 00000000 end 000002b7 length   695 section .debug
 start 00000033 end 0000009e length   107 section .info.
 
 Debug\clock.o:
-start 00008106 end 0000810b length     5 section .text
-start 000000f8 end 000001ab length   179 section .debug
+start 00008181 end 00008186 length     5 section .text
+start 000002b7 end 0000036a length   179 section .debug
 start 0000009e end 00000108 length   106 section .info.
 
 Debug\gpio.o:
-start 0000810b end 000081e7 length   220 section .text
-start 000001ab end 000005e6 length  1083 section .debug
+start 00008186 end 00008262 length   220 section .text
+start 0000036a end 000007a5 length  1083 section .debug
 start 00000108 end 00000171 length   105 section .info.
 
 Debug\main.o:
-start 000081e7 end 000081f8 length    17 section .text
-start 000005e6 end 00000694 length   174 section .debug
+start 00008262 end 00008277 length    21 section .text
+start 000007a5 end 00000853 length   174 section .debug
 start 00000171 end 000001da length   105 section .info.
 
 Debug\quickshifter.o:
-start 000081f8 end 00008218 length    32 section .text
-start 00000694 end 0000079a length   262 section .debug
+start 00008277 end 000082fb length   132 section .text
+start 0000000f end 00000022 length    19 section .ubsct
+start 00000853 end 00000ac2 length   623 section .debug
 start 000001da end 0000024b length   113 section .info.
 
 Debug\relay.o:
-start 0000079a end 000007de length    68 section .debug
+start 00000ac2 end 00000b06 length    68 section .debug
 start 0000024b end 000002b5 length   106 section .info.
 
+Debug\software_timer.o:
+start 000082fb end 00008349 length    78 section .text
+start 00000b06 end 00000db7 length   689 section .debug
+start 000002b5 end 00000328 length   115 section .info.
+
 Debug\timer.o:
-start 00008218 end 00008248 length    48 section .text
-start 000007de end 000008ed length   271 section .debug
-start 000002b5 end 0000031f length   106 section .info.
+start 00008349 end 00008396 length    77 section .text
+start 00000000 end 00000004 length     4 section .bsct
+start 00000db7 end 00000f83 length   460 section .debug
+start 00000328 end 00000392 length   106 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lcmp.o:
+start 00008396 end 000083b6 length    32 section .text
+start 00000392 end 000003c0 length    46 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lgadc.o:
+start 000083b6 end 000083c6 length    16 section .text
+start 000003c0 end 000003ef length    47 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lreg.o:
+start 00000022 end 00000026 length     4 section .ubsct
+start 000003ef end 0000041d length    46 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lsub.o:
+start 000083c6 end 000083de length    24 section .text
+start 0000041d end 0000044b length    46 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)ltor.o:
+start 000083de end 000083f0 length    18 section .text
+start 0000044b end 00000479 length    46 section .info.
+
+(C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)rtol.o:
+start 000083f0 end 00008402 length    18 section .text
+start 00000479 end 000004a7 length    46 section .info.
 
 (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)xreg.o:
-start 00000000 end 00000003 length     3 section .ubsct
-start 0000031f end 0000034d length    46 section .info.
+start 00000026 end 00000029 length     3 section .ubsct
+start 000004a7 end 000004d5 length    46 section .info.
 
 (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)yreg.o:
-start 00000003 end 00000006 length     3 section .ubsct
-start 0000034d end 0000037b length    46 section .info.
+start 00000029 end 0000002c length     3 section .ubsct
+start 000004d5 end 00000503 length    46 section .info.
 
 Debug\stm8_interrupt_vector.o:
-start 00008248 end 00008249 length     1 section .text
-start 000008ed end 00000a58 length   363 section .debug
-start 0000037b end 000003f5 length   122 section .info.
+start 00008402 end 00008429 length    39 section .text
+start 00000f83 end 00001137 length   436 section .debug
+start 00000503 end 0000057d length   122 section .info.
 start 00008000 end 00008080 length   128 section .const
 
 
@@ -85,35 +118,45 @@ start 00008000 end 00008080 length   128 section .const
                              -----------
 
 Debug\button.o:
-_Button_GetPress            8   (2)
-_Button_Init                6   (2)
+_Button_GetPress                2   (2)
+_Button_Init                    6   (2)
+_Button_Update                 14   (2)
 
 Debug\clock.o:
-_CLK_Init                   2   (2)
+_CLK_Init                       2   (2)
 
 Debug\gpio.o:
-_GPIO_Clear                 2   (2)
-_GPIO_Input_PU              4   (4)
-_GPIO_Output_PP             4   (4)
-_GPIO_Read                  6   (6)
-_GPIO_Set                   2   (2)
-_GPIO_Toggle           >    2   (2)
+_GPIO_Clear                     2   (2)
+_GPIO_Input_PU                  4   (4)
+_GPIO_Output_PP                 4   (4)
+_GPIO_Read                      6   (6)
+_GPIO_Set                       2   (2)
+_GPIO_Toggle               >    2   (2)
 
 Debug\main.o:
-_main                  >   12   (2)
+_main                      >   16   (2)
 
 Debug\quickshifter.o:
-_QuickShifter_Init          6   (2)
-_QuickShifter_Task         10   (2)
+_QuickShifter_Init              6   (2)
+_QuickShifter_Task             14   (2)
+
+Debug\software_timer.o:
+_SoftwareTimer_Expired          8   (4)
+_SoftwareTimer_IsRunning   >    2   (2)
+_SoftwareTimer_Start           12   (8)
+_SoftwareTimer_Stop        >    2   (2)
 
 Debug\stm8_interrupt_vector.o:
-f_NonHandledInterrupt  >    6   (6)
+f_NonHandledInterrupt      >    6   (6)
+f_TIM4_UPD_OVF_IRQHandler  >   16   (12)
 
 Debug\timer.o:
-_TIM4_Delay_ms              4   (4)
-_TIM4_Init                  2   (2)
+_Timer_Delay               >   14   (10)
+_Timer_GetTick                  4   (2)
+_Timer_Init                     2   (2)
+_Timer_TickISR                  4   (2)
 
-Stack size: 18
+Stack size: 32
 
 
                               ---------
@@ -121,52 +164,79 @@ Stack size: 18
                               ---------
    1 > _GPIO_Toggle: (2)
 
-   2 > __stext: (0)
+   2 > _SoftwareTimer_IsRunning: (2)
 
-   3 > _main: (2)
-   4      + _Button_Init: (2)
-   5      |    + _GPIO_Input_PU: (4)
-          | 
-   6      + _CLK_Init: (2)
-   7      + _QuickShifter_Init: (2)
-   8      |    + _GPIO_Output_PP: (4)
-          | 
-   9      + _QuickShifter_Task: (2)
-  10      |    + _Button_GetPress: (2)
-  11      |    |    + _GPIO_Read: (6)
-  12      |    |    + _TIM4_Delay_ms: (4)
-          |    | 
-  13      |    + _GPIO_Clear: (2)
-  14      |    + _GPIO_Set: (2)
-  15      |    + _TIM4_Delay_ms --> 12
-          | 
-  16      + _TIM4_Init: (2)
+   3 > _SoftwareTimer_Stop: (2)
+
+   4 > _Timer_Delay: (10)
+   5      + _Timer_GetTick: (2)
        
-  17 > f_NonHandledInterrupt: (6)
+   6 > __stext: (0)
 
-  18   _Button_GetPress --> 10
+   7 > _main: (2)
+   8      + _Button_Init: (2)
+   9      |    + _GPIO_Input_PU: (4)
+          | 
+  10      + _Button_Update: (2)
+  11      |    + _GPIO_Read: (6)
+  12      |    + _SoftwareTimer_Expired: (4)
+  13      |    |    + _Timer_GetTick --> 5
+          |    | 
+  14      |    + _SoftwareTimer_Start: (8)
+  15      |    |    + _Timer_GetTick --> 5
+          |    | 
+          | 
+  16      + _CLK_Init: (2)
+  17      + _QuickShifter_Init: (2)
+  18      |    + _GPIO_Clear: (2)
+  19      |    + _GPIO_Output_PP: (4)
+          | 
+  20      + _QuickShifter_Task: (2)
+  21      |    + _Button_GetPress: (2)
+  22      |    + _GPIO_Clear --> 18
+  23      |    + _GPIO_Read --> 11
+  24      |    + _GPIO_Set: (2)
+  25      |    + _SoftwareTimer_Expired --> 12
+  26      |    + _SoftwareTimer_Start --> 14
+          | 
+  27      + _Timer_Init: (2)
+       
+  28 > f_NonHandledInterrupt: (6)
 
-  19   _Button_Init --> 4
+  29 > f_TIM4_UPD_OVF_IRQHandler: (12)
+  30      + _Timer_TickISR: (2)
+       
+  31   _Button_GetPress --> 21
 
-  20   _CLK_Init --> 6
+  32   _Button_Init --> 8
 
-  21   _GPIO_Clear --> 13
+  33   _Button_Update --> 10
 
-  22   _GPIO_Input_PU --> 5
+  34   _CLK_Init --> 16
 
-  23   _GPIO_Output_PP --> 8
+  35   _GPIO_Clear --> 18
 
-  24   _GPIO_Read --> 11
+  36   _GPIO_Input_PU --> 9
 
-  25   _GPIO_Set --> 14
+  37   _GPIO_Output_PP --> 19
 
-  26   _QuickShifter_Init --> 7
+  38   _GPIO_Read --> 11
 
-  27   _QuickShifter_Task --> 9
+  39   _GPIO_Set --> 24
 
-  28   _TIM4_Delay_ms --> 12
+  40   _QuickShifter_Init --> 17
 
-  29   _TIM4_Init --> 16
+  41   _QuickShifter_Task --> 20
+
+  42   _SoftwareTimer_Expired --> 12
+
+  43   _SoftwareTimer_Start --> 14
+
+  44   _Timer_GetTick --> 5
+
+  45   _Timer_Init --> 27
+
+  46   _Timer_TickISR --> 30
 
 
 
@@ -174,51 +244,87 @@ Stack size: 18
                                Symbols
                                -------
 
-_Button_GetPress        000080da   defined in Debug\button.o section .text
-                                   used in Debug\quickshifter.o
-_Button_Init            000080d3   defined in Debug\button.o section .text
-                                   used in Debug\main.o
-_CLK_Init               00008106   defined in Debug\clock.o section .text
-                                   used in Debug\main.o
-_GPIO_Clear             00008197   defined in Debug\gpio.o section .text
-                                   used in Debug\quickshifter.o
-_GPIO_Input_PU          00008147   defined in Debug\gpio.o section .text
-                                   used in Debug\button.o
-_GPIO_Output_PP         0000810b   defined in Debug\gpio.o section .text
-                                   used in Debug\quickshifter.o
-_GPIO_Read              000081be   defined in Debug\gpio.o section .text
-                                   used in Debug\button.o
-_GPIO_Set               00008184   defined in Debug\gpio.o section .text
-                                   used in Debug\quickshifter.o
-_GPIO_Toggle            000081ab   defined in Debug\gpio.o section .text
-_QuickShifter_Init      000081f8   defined in Debug\quickshifter.o section .text
-                                   used in Debug\main.o
-_QuickShifter_Task      000081ff   defined in Debug\quickshifter.o section .text
-                                   used in Debug\main.o
-_TIM4_Delay_ms          00008225   defined in Debug\timer.o section .text
-                                   used in Debug\button.o Debug\quickshifter.o
-_TIM4_Init              00008218   defined in Debug\timer.o section .text
-                                   used in Debug\main.o
-__endmem                000001ff   defined in command file
-                                   *** not used ***
-__endzp                 00000006   defined in command file section .ubsct
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-__idesc__               00008080   defined in linker section .init
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-__memory                00000100   defined in command file section .bss
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-__stack                 000003ff   defined in command file
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-__startmem              00000100   defined in command file section .bss
-                                   *** not used ***
-__stext                 00008083   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
-                                   used in Debug\stm8_interrupt_vector.o
-__vectab                00008000   defined in Debug\stm8_interrupt_vector.o section .const
-_exit                   000080d1   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
-_main                   000081e7   defined in Debug\main.o section .text
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-c_x                     00000000   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)xreg.o section .ubsct
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-c_y                     00000003   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)yreg.o section .ubsct
-                                   used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
-f_NonHandledInterrupt   00008248   defined in Debug\stm8_interrupt_vector.o section .text
+_Button_GetPress            00008174   defined in Debug\button.o section .text
+                                       used in Debug\quickshifter.o
+_Button_Init                000080dc   defined in Debug\button.o section .text
+                                       used in Debug\main.o
+_Button_Update              000080e7   defined in Debug\button.o section .text
+                                       used in Debug\main.o
+_CLK_Init                   00008181   defined in Debug\clock.o section .text
+                                       used in Debug\main.o
+_GPIO_Clear                 00008212   defined in Debug\gpio.o section .text
+                                       used in Debug\quickshifter.o
+_GPIO_Input_PU              000081c2   defined in Debug\gpio.o section .text
+                                       used in Debug\button.o
+_GPIO_Output_PP             00008186   defined in Debug\gpio.o section .text
+                                       used in Debug\quickshifter.o
+_GPIO_Read                  00008239   defined in Debug\gpio.o section .text
+                                       used in Debug\button.o
+                                               Debug\quickshifter.o
+_GPIO_Set                   000081ff   defined in Debug\gpio.o section .text
+                                       used in Debug\quickshifter.o
+_GPIO_Toggle                00008226   defined in Debug\gpio.o section .text
+_QuickShifter_Init          00008277   defined in Debug\quickshifter.o section .text
+                                       used in Debug\main.o
+_QuickShifter_Task          00008286   defined in Debug\quickshifter.o section .text
+                                       used in Debug\main.o
+_SoftwareTimer_Expired      00008324   defined in Debug\software_timer.o section .text
+                                       used in Debug\button.o
+                                               Debug\quickshifter.o
+_SoftwareTimer_IsRunning    00008321   defined in Debug\software_timer.o section .text
+_SoftwareTimer_Start        000082fb   defined in Debug\software_timer.o section .text
+                                       used in Debug\button.o
+                                               Debug\quickshifter.o
+_SoftwareTimer_Stop         0000831e   defined in Debug\software_timer.o section .text
+_Timer_Delay                00008376   defined in Debug\timer.o section .text
+_Timer_GetTick              0000836f   defined in Debug\timer.o section .text
+                                       used in Debug\software_timer.o
+_Timer_Init                 00008349   defined in Debug\timer.o section .text
+                                       used in Debug\main.o
+_Timer_TickISR              00008366   defined in Debug\timer.o section .text
+                                       used in Debug\stm8_interrupt_vector.o
+__endmem                    000001ff   defined in command file
+                                       *** not used ***
+__endzp                     0000002c   defined in command file section .ubsct
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__idesc__                   00008080   defined in linker section .init
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__memory                    00000100   defined in command file section .bss
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__stack                     000003ff   defined in command file
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+__startmem                  00000100   defined in command file section .bss
+                                       *** not used ***
+__stext                     0000808c   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
+                                       used in Debug\stm8_interrupt_vector.o
+__vectab                    00008000   defined in Debug\stm8_interrupt_vector.o section .const
+_exit                       000080da   defined in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8 section .text
+_main                       00008262   defined in Debug\main.o section .text
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+_system_tick                00000000   defined in Debug\timer.o section .bsct, initialized
+c_lcmp                      00008396   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lcmp.o section .text
+                                       used in Debug\software_timer.o
+                                               Debug\timer.o
+c_lgadc                     000083b6   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lgadc.o section .text
+                                       used in Debug\timer.o
+c_lreg                      00000022   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lreg.o section .ubsct
+                                       used in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lcmp.o
+                                               (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lsub.o
+                                               (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)ltor.o
+                                               (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)rtol.o
+c_lsub                      000083c6   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)lsub.o section .text
+                                       used in Debug\software_timer.o
+                                               Debug\timer.o
+c_ltor                      000083de   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)ltor.o section .text
+                                       used in Debug\timer.o
+c_rtol                      000083f0   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)rtol.o section .text
+                                       used in Debug\software_timer.o
+                                               Debug\timer.o
+c_x                         00000026   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)xreg.o section .ubsct
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+                                               Debug\stm8_interrupt_vector.o
+c_y                         00000029   defined in (C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\libm0.sm8)yreg.o section .ubsct
+                                       used in C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\lib\crtsi0.sm8
+                                               Debug\stm8_interrupt_vector.o
+f_NonHandledInterrupt       00008402   defined in Debug\stm8_interrupt_vector.o section .text
+f_TIM4_UPD_OVF_IRQHandler   00008403   defined in Debug\stm8_interrupt_vector.o section .text

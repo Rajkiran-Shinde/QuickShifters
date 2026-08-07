@@ -3,8 +3,20 @@
 
 #include "common.h"
 
-void TIM4_Init(void);
+/*=============================
+    Public Functions
+==============================*/
 
-void TIM4_Delay_ms(uint16_t ms);
+/* Initialize TIM4 for 1ms system tick */
+void Timer_Init(void);
+
+/* Returns system tick in milliseconds */
+uint32_t Timer_GetTick(void);
+
+/* Blocking delay (for initialization/debug only) */
+void Timer_Delay(uint32_t ms);
+
+/* Called from TIM4 ISR */
+void Timer_TickISR(void);
 
 #endif

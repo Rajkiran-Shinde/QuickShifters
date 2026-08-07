@@ -56,6 +56,7 @@ Release\gpio.o
 Release\main.o
 Release\quickshifter.o
 Release\relay.o
+Release\software_timer.o
 Release\timer.o
 #<END OBJECT_FILES>
 
