@@ -62,6 +62,7 @@ Debug\relay.o
 Debug\software_timer.o
 Debug\timer.o
 Debug\uart.o
+Debug\watchdog.o
 #<END OBJECT_FILES>
 
 

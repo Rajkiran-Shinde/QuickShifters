@@ -5,22 +5,31 @@ Keyword=ST7Project
 Number=1.3
 
 [Root.Source Files.button.c.Config.0]
-ExternDep= button.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" button.h  common.h gpio.h config.h software_timer.h
+ExternDep= button.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" button.h  common.h gpio.h config.h software_timer.h mode.h
 
 [Root.Source Files.clock.c.Config.0]
 ExternDep= clock.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" clock.h
+
+[Root.Source Files.debug.c.Config.0]
+ExternDep= debug.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" debug.h  common.h config.h gpio.h watchdog.h uart.h
+
+[Root.Source Files.eeprom.c.Config.0]
+ExternDep= eeprom.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" eeprom.h  common.h debug.h watchdog.h
 
 [Root.Source Files.gpio.c.Config.0]
 ExternDep= gpio.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" gpio.h  common.h stm8_hw.h
 
 [Root.Source Files.main.c.Config.0]
-ExternDep= main.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" gpio.h  common.h button.h timer.h config.h clock.h quickshifter.h software_timer.h
+ExternDep= main.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" gpio.h  common.h button.h timer.h config.h clock.h quickshifter.h software_timer.h  mode.h eeprom.h watchdog.h debug.h
+
+[Root.Source Files.mode.c.Config.0]
+ExternDep= mode.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" mode.h  common.h eeprom.h
 
 [Root.Source Files.quickshifter.c.Config.0]
-ExternDep= quickshifter.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h"  quickshifter.h common.h software_timer.h button.h gpio.h timer.h config.h
+ExternDep= quickshifter.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h"  quickshifter.h common.h software_timer.h button.h relay.h timer.h mode.h  debug.h
 
 [Root.Source Files.relay.c.Config.0]
-ExternDep= relay.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h"
+ExternDep= relay.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" relay.h  common.h gpio.h config.h debug.h
 
 [Root.Source Files.software_timer.c.Config.0]
 ExternDep= software_timer.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h"  software_timer.h common.h timer.h
@@ -30,3 +39,9 @@ ExternDep= stm8_interrupt_vector.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers
 
 [Root.Source Files.timer.c.Config.0]
 ExternDep= timer.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" timer.h  common.h
+
+[Root.Source Files.uart.c.Config.0]
+ExternDep= uart.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" uart.h  common.h stm8_hw.h
+
+[Root.Source Files.watchdog.c.Config.0]
+ExternDep= watchdog.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" watchdog.h  common.h

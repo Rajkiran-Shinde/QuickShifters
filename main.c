@@ -7,6 +7,7 @@
 #include "software_timer.h"
 #include "mode.h"
 #include "eeprom.h"
+#include "watchdog.h"
 
 //Debug
 #include "debug.h"
@@ -36,6 +37,8 @@ Debug_LogMode(
 
 QuickShifter_Init();
 
+Watchdog_Init();
+
 __asm ("rim\n");
 
     while(1)
@@ -45,7 +48,9 @@ __asm ("rim\n");
         ModeButton_Update();
 
         QuickShifter_Task();
-
+				
+				Watchdog_Refresh();
+								
         if(ModeButton_GetPress())
         {
             Mode_Next();

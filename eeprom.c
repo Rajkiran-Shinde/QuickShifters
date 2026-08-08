@@ -1,33 +1,28 @@
 #include "eeprom.h"
 #include "debug.h"
+#include "watchdog.h"
 
-/************ STM8 FLASH / EEPROM REGISTERS ************/
 
-/*
- * STM8S003F3 register addresses
- */
+/************************************************
+        STM8 FLASH / EEPROM REGISTERS
+************************************************/
 
 #define FLASH_IAPSR     (*(volatile uint8_t*)0x505F)
 #define FLASH_DUKR      (*(volatile uint8_t*)0x5064)
 
-/************ FLASH_IAPSR BITS ************/
+
+/************************************************
+                FLASH_IAPSR BITS
+************************************************/
 
 #define FLASH_IAPSR_DUL     0x08
 #define FLASH_IAPSR_EOP     0x04
 
 
-/************ INTERNAL FUNCTIONS ************/
+/************************************************
+                INTERNAL FUNCTIONS
+************************************************/
 
-/*
- * Unlock Data EEPROM for writing.
- *
- * STM8 requires the MASS key sequence:
- *
- *      0xAE
- *      0x56
- *
- * After the correct sequence, DUL becomes 1.
- */
 static void EEPROM_Unlock(void)
 {
     if((FLASH_IAPSR & FLASH_IAPSR_DUL) == 0)
@@ -35,44 +30,76 @@ static void EEPROM_Unlock(void)
         FLASH_DUKR = 0xAE;
         FLASH_DUKR = 0x56;
 
-        /*
-         * Wait until EEPROM write protection
-         * has actually been removed.
-         */
         while((FLASH_IAPSR & FLASH_IAPSR_DUL) == 0)
         {
-            /* Wait */
+            /*
+             * Wait for EEPROM/FLASH data unlock.
+             *
+             * Keep watchdog alive while waiting.
+             */
+            Watchdog_Refresh();
         }
     }
 }
 
 
 /*
- * Calculate configuration checksum.
+ * Calculate checksum for CURRENT configuration.
  *
- * The checksum is based on:
- *
- *      MAGIC ^ MODE ^ 0x5A
+ * checksum = MAGIC ^ MODE ^ 0x5A
  */
-static uint8_t EEPROM_CalculateChecksum(uint8_t mode)
+static uint8_t EEPROM_CalculateChecksum(
+    uint8_t mode
+)
 {
-    return (uint8_t)(EEPROM_MAGIC ^ mode ^ 0x5A);
-}
-
-
-/************ PUBLIC FUNCTIONS ************/
-
-
-void EEPROM_Init(void)
-{
-//empty 
+    return (uint8_t)(
+        EEPROM_MAGIC ^
+        mode ^
+        0x5A
+    );
 }
 
 
 /*
- * Read one byte from EEPROM.
+ * Calculate checksum for LEGACY configuration.
+ *
+ * Old format:
+ *
+ * checksum = 0xA5 ^ legacy_mode ^ 0x5A
  */
-uint8_t EEPROM_ReadByte(uint16_t address)
+static uint8_t EEPROM_CalculateLegacyChecksum(
+    uint8_t mode
+)
+{
+    return (uint8_t)(
+        EEPROM_LEGACY_MAGIC ^
+        mode ^
+        0x5A
+    );
+}
+
+
+/************************************************
+                PUBLIC FUNCTIONS
+************************************************/
+
+void EEPROM_Init(void)
+{
+    /*
+     * No initialization required.
+     *
+     * EEPROM is memory mapped.
+     */
+}
+
+
+/************************************************
+                EEPROM READ
+************************************************/
+
+uint8_t EEPROM_ReadByte(
+    uint16_t address
+)
 {
     uint8_t value;
 
@@ -81,47 +108,54 @@ uint8_t EEPROM_ReadByte(uint16_t address)
     return value;
 }
 
-/*
- * Write one byte to EEPROM.
- */
-uint8_t EEPROM_WriteByte(uint16_t address, uint8_t value)
+
+/************************************************
+                EEPROM WRITE
+************************************************/
+
+uint8_t EEPROM_WriteByte(
+    uint16_t address,
+    uint8_t value
+)
 {
+    /*
+     * Unlock EEPROM / data memory.
+     */
     EEPROM_Unlock();
 
+
     /*
-     * Direct write to EEPROM address.
-     *
-     * STM8 performs the EEPROM erase/program cycle
-     * automatically.
+     * Write EEPROM byte.
      */
     (*(volatile uint8_t*)address) = value;
 
+
     /*
-     * Wait until programming is complete.
+     * EEPROM programming is a blocking operation.
+     *
+     * Keep the watchdog alive while waiting for
+     * the programming operation to complete.
      */
     while((FLASH_IAPSR & FLASH_IAPSR_EOP) == 0)
     {
-        /* Wait */
+        Watchdog_Refresh();
     }
+
+
+    /*
+     * Refresh once more after the write completes.
+     */
+    Watchdog_Refresh();
+
 
     return TRUE;
 }
 
 
-/*
- * Load saved QuickShifter mode.
- *
- * Returns:
- *
- * 0 -> Mode 1
- * 1 -> Mode 2
- * 2 -> Mode 3
- * 3 -> Mode 4
- * 4 -> Mode 5
- *
- * If EEPROM data is invalid,
- * Mode 1 is returned.
- */
+/************************************************
+                LOAD MODE
+************************************************/
+
 uint8_t EEPROM_LoadMode(void)
 {
     uint8_t magic;
@@ -129,17 +163,41 @@ uint8_t EEPROM_LoadMode(void)
     uint8_t checksum;
     uint8_t expectedChecksum;
 
-    Debug_Log("[EEPROM] Loading configuration...\r\n");
 
-    magic = EEPROM_ReadByte(EEPROM_MAGIC_ADDRESS);
-    mode = EEPROM_ReadByte(EEPROM_MODE_ADDRESS);
-    checksum = EEPROM_ReadByte(EEPROM_CHECKSUM_ADDRESS);
+    Debug_Log(
+        "[EEPROM] Loading configuration...\r\n"
+    );
+
+
+    /*
+     * Read configuration.
+     */
+
+    magic =
+        EEPROM_ReadByte(
+            EEPROM_MAGIC_ADDRESS
+        );
+
+    mode =
+        EEPROM_ReadByte(
+            EEPROM_MODE_ADDRESS
+        );
+
+    checksum =
+        EEPROM_ReadByte(
+            EEPROM_CHECKSUM_ADDRESS
+        );
+
+
+    /**********************************************
+                DEBUG INFORMATION
+    **********************************************/
 
     Debug_Log("[EEPROM] Magic: 0x");
     Debug_LogHex(magic);
     Debug_Log("\r\n");
 
-    Debug_Log("[EEPROM] Mode: ");
+    Debug_Log("[EEPROM] Stored Mode: ");
     Debug_LogDecimal(mode);
     Debug_Log("\r\n");
 
@@ -148,180 +206,417 @@ uint8_t EEPROM_LoadMode(void)
     Debug_Log("\r\n");
 
 
-    /*
-     * Check magic number
-     */
-    if(magic != EEPROM_MAGIC)
-    {
-        Debug_Log("[EEPROM] ERROR: Invalid magic number\r\n");
-        Debug_Log("[EEPROM] No valid configuration found\r\n");
-        Debug_Log("[EEPROM] Using default Mode 1\r\n");
+    /**********************************************
+                CURRENT FORMAT
+    **********************************************/
 
-        return 0;
+    if(magic == EEPROM_MAGIC)
+    {
+        /*
+         * Validate mode range.
+         */
+
+        if(
+            (mode < EEPROM_MIN_MODE) ||
+            (mode > EEPROM_MAX_MODE)
+        )
+        {
+            Debug_Log(
+                "[EEPROM] ERROR: Invalid mode\r\n"
+            );
+
+            Debug_Log(
+                "[EEPROM] Using default Mode 1\r\n"
+            );
+
+            return 1;
+        }
+
+
+        /*
+         * Calculate expected checksum.
+         */
+
+        expectedChecksum =
+            EEPROM_CalculateChecksum(mode);
+
+
+        Debug_Log(
+            "[EEPROM] Expected checksum: 0x"
+        );
+
+        Debug_LogHex(expectedChecksum);
+
+        Debug_Log("\r\n");
+
+
+        /*
+         * Verify checksum.
+         */
+
+        if(checksum != expectedChecksum)
+        {
+            Debug_Log(
+                "[EEPROM] ERROR: Checksum mismatch\r\n"
+            );
+
+            Debug_Log(
+                "[EEPROM] Using default Mode 1\r\n"
+            );
+
+            return 1;
+        }
+
+
+        /*
+         * Configuration is valid.
+         */
+
+        Debug_Log(
+            "[EEPROM] Configuration VALID\r\n"
+        );
+
+        Debug_Log(
+            "[EEPROM] Restoring Mode: "
+        );
+
+        Debug_LogDecimal(mode);
+
+        Debug_Log("\r\n");
+
+
+        return mode;
     }
 
 
-    /*
-     * Check mode range
-     */
-    if(mode > 4)
-    {
-        Debug_Log("[EEPROM] ERROR: Invalid mode value\r\n");
-        Debug_Log("[EEPROM] Using default Mode 1\r\n");
+    /**********************************************
+                LEGACY FORMAT
+    **********************************************/
 
-        return 0;
+    if(magic == EEPROM_LEGACY_MAGIC)
+    {
+        uint8_t legacyChecksum;
+
+
+        /*
+         * Old format:
+         *
+         * 0 -> Mode 1
+         * 1 -> Mode 2
+         * 2 -> Mode 3
+         * 3 -> Mode 4
+         * 4 -> Mode 5
+         */
+
+        Debug_Log(
+            "[EEPROM] Legacy configuration detected\r\n"
+        );
+
+
+        /*
+         * Validate old mode.
+         */
+
+        if(mode > 4)
+        {
+            Debug_Log(
+                "[EEPROM] ERROR: Invalid legacy mode\r\n"
+            );
+
+            Debug_Log(
+                "[EEPROM] Using default Mode 1\r\n"
+            );
+
+            return 1;
+        }
+
+
+        /*
+         * Validate legacy checksum.
+         */
+
+        legacyChecksum =
+            EEPROM_CalculateLegacyChecksum(mode);
+
+
+        if(checksum != legacyChecksum)
+        {
+            Debug_Log(
+                "[EEPROM] ERROR: Legacy checksum mismatch\r\n"
+            );
+
+            Debug_Log(
+                "[EEPROM] Using default Mode 1\r\n"
+            );
+
+            return 1;
+        }
+
+
+        /*
+         * Convert legacy mode:
+         *
+         * 0 -> 1
+         * 1 -> 2
+         * 2 -> 3
+         * 3 -> 4
+         * 4 -> 5
+         */
+
+        mode = mode + 1;
+
+
+        Debug_Log(
+            "[EEPROM] Legacy mode converted to Mode: "
+        );
+
+        Debug_LogDecimal(mode);
+
+        Debug_Log("\r\n");
+
+
+        /*
+         * Save converted configuration using
+         * the current EEPROM format.
+         */
+        EEPROM_SaveMode(mode);
+
+
+        Debug_Log(
+            "[EEPROM] Legacy configuration migrated\r\n"
+        );
+
+
+        return mode;
     }
 
 
-    /*
-     * Calculate expected checksum
-     */
-    expectedChecksum = EEPROM_CalculateChecksum(mode);
+    /**********************************************
+                UNKNOWN FORMAT
+    **********************************************/
 
-    Debug_Log("[EEPROM] Expected checksum: 0x");
-    Debug_LogHex(expectedChecksum);
-    Debug_Log("\r\n");
+    Debug_Log(
+        "[EEPROM] ERROR: Unknown configuration format\r\n"
+    );
 
-
-    /*
-     * Verify checksum
-     */
-    if(checksum != expectedChecksum)
-    {
-        Debug_Log("[EEPROM] ERROR: Checksum mismatch\r\n");
-        Debug_Log("[EEPROM] EEPROM data may be corrupted\r\n");
-        Debug_Log("[EEPROM] Using default Mode 1\r\n");
-
-        return 0;
-    }
+    Debug_Log(
+        "[EEPROM] Using default Mode 1\r\n"
+    );
 
 
-    /*
-     * Everything is valid
-     */
-    Debug_Log("[EEPROM] Configuration VALID\r\n");
-
-    Debug_Log("[EEPROM] Restoring Mode: ");
-    Debug_LogDecimal(mode);
-    Debug_Log("\r\n");
-
-    return mode;
+    return 1;
 }
 
-/*
- * Save QuickShifter mode into EEPROM.
- */
- void EEPROM_SaveMode(uint8_t mode)
+
+/************************************************
+                SAVE MODE
+************************************************/
+
+void EEPROM_SaveMode(uint8_t mode)
 {
     uint8_t checksum;
+
     uint8_t readBackMode;
     uint8_t readBackMagic;
     uint8_t readBackChecksum;
 
 
-    /*
-     * Validate mode before writing.
-     */
-    if(mode > 4)
+    /**********************************************
+                VALIDATE MODE
+    **********************************************/
+
+    if(
+        (mode < EEPROM_MIN_MODE) ||
+        (mode > EEPROM_MAX_MODE)
+    )
     {
-        Debug_Log("[EEPROM] ERROR: Attempted to save invalid mode\r\n");
+        Debug_Log(
+            "[EEPROM] ERROR: Attempted to save invalid mode\r\n"
+        );
+
         return;
     }
 
 
     Debug_Log("\r\n");
-    Debug_Log("[EEPROM] =============================\r\n");
-    Debug_Log("[EEPROM] Saving configuration\r\n");
+
+    Debug_Log(
+        "[EEPROM] =============================\r\n"
+    );
+
+    Debug_Log(
+        "[EEPROM] Saving configuration\r\n"
+    );
+
+
+    /**********************************************
+                CALCULATE CHECKSUM
+    **********************************************/
+
+    checksum =
+        EEPROM_CalculateChecksum(mode);
 
 
     Debug_Log("[EEPROM] Mode = ");
     Debug_LogDecimal(mode);
+
     Debug_Log("\r\n");
 
 
-    checksum = EEPROM_CalculateChecksum(mode);
+    Debug_Log(
+        "[EEPROM] Calculated checksum = 0x"
+    );
 
-    Debug_Log("[EEPROM] Calculated checksum = 0x");
     Debug_LogHex(checksum);
+
     Debug_Log("\r\n");
 
 
-    /*
-     * Write MODE
-     */
-    Debug_Log("[EEPROM] Writing MODE...\r\n");
+    /**********************************************
+                WRITE MODE
+    **********************************************/
+
+    Debug_Log(
+        "[EEPROM] Writing MODE...\r\n"
+    );
 
     EEPROM_WriteByte(
         EEPROM_MODE_ADDRESS,
         mode
     );
 
-
     /*
-     * Write CHECKSUM
+     * Give the watchdog a refresh between
+     * EEPROM programming operations.
      */
-    Debug_Log("[EEPROM] Writing CHECKSUM...\r\n");
+    Watchdog_Refresh();
+
+
+    /**********************************************
+                WRITE CHECKSUM
+    **********************************************/
+
+    Debug_Log(
+        "[EEPROM] Writing CHECKSUM...\r\n"
+    );
 
     EEPROM_WriteByte(
         EEPROM_CHECKSUM_ADDRESS,
         checksum
     );
 
+    Watchdog_Refresh();
 
-    /*
-     * Write MAGIC LAST
-     */
-    Debug_Log("[EEPROM] Writing MAGIC...\r\n");
+
+    /**********************************************
+                WRITE MAGIC LAST
+    **********************************************/
+
+    Debug_Log(
+        "[EEPROM] Writing MAGIC...\r\n"
+    );
 
     EEPROM_WriteByte(
         EEPROM_MAGIC_ADDRESS,
         EEPROM_MAGIC
     );
 
+    Watchdog_Refresh();
 
-    /*
-     * Read everything back.
-     */
-    Debug_Log("[EEPROM] Verifying EEPROM...\r\n");
+
+    /**********************************************
+                READ BACK
+    **********************************************/
+
+    Debug_Log(
+        "[EEPROM] Verifying EEPROM...\r\n"
+    );
+
 
     readBackMagic =
-        EEPROM_ReadByte(EEPROM_MAGIC_ADDRESS);
+        EEPROM_ReadByte(
+            EEPROM_MAGIC_ADDRESS
+        );
 
     readBackMode =
-        EEPROM_ReadByte(EEPROM_MODE_ADDRESS);
+        EEPROM_ReadByte(
+            EEPROM_MODE_ADDRESS
+        );
 
     readBackChecksum =
-        EEPROM_ReadByte(EEPROM_CHECKSUM_ADDRESS);
-
-
-    Debug_Log("[EEPROM] Read-back Magic: 0x");
-    Debug_LogHex(readBackMagic);
-    Debug_Log("\r\n");
-
-    Debug_Log("[EEPROM] Read-back Mode: ");
-    Debug_LogDecimal(readBackMode);
-    Debug_Log("\r\n");
-
-    Debug_Log("[EEPROM] Read-back Checksum: 0x");
-    Debug_LogHex(readBackChecksum);
-    Debug_Log("\r\n");
+        EEPROM_ReadByte(
+            EEPROM_CHECKSUM_ADDRESS
+        );
 
 
     /*
-     * Verify everything.
+     * Refresh watchdog after EEPROM verification
+     * reads.
      */
-    if((readBackMagic == EEPROM_MAGIC) &&
-       (readBackMode == mode) &&
-       (readBackChecksum == checksum))
+    Watchdog_Refresh();
+
+
+    Debug_Log(
+        "[EEPROM] Read-back Magic: 0x"
+    );
+
+    Debug_LogHex(readBackMagic);
+
+    Debug_Log("\r\n");
+
+
+    Debug_Log(
+        "[EEPROM] Read-back Mode: "
+    );
+
+    Debug_LogDecimal(readBackMode);
+
+    Debug_Log("\r\n");
+
+
+    Debug_Log(
+        "[EEPROM] Read-back Checksum: 0x"
+    );
+
+    Debug_LogHex(readBackChecksum);
+
+    Debug_Log("\r\n");
+
+
+    /**********************************************
+                VERIFY
+    **********************************************/
+
+    if(
+        (readBackMagic == EEPROM_MAGIC) &&
+        (readBackMode == mode) &&
+        (readBackChecksum == checksum)
+    )
     {
-        Debug_Log("[EEPROM] SAVE SUCCESS\r\n");
-        Debug_Log("[EEPROM] Configuration verified OK\r\n");
+        Debug_Log(
+            "[EEPROM] SAVE SUCCESS\r\n"
+        );
+
+        Debug_Log(
+            "[EEPROM] Configuration verified OK\r\n"
+        );
     }
     else
     {
-        Debug_Log("[EEPROM] ERROR: EEPROM verification FAILED\r\n");
+        Debug_Log(
+            "[EEPROM] ERROR: EEPROM verification FAILED\r\n"
+        );
     }
 
 
-    Debug_Log("[EEPROM] =============================\r\n");
+    Debug_Log(
+        "[EEPROM] =============================\r\n"
+    );
+
+
+    /*
+     * Final watchdog refresh before returning
+     * to the main loop.
+     */
+    Watchdog_Refresh();
 }

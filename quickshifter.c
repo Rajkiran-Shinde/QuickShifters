@@ -3,6 +3,34 @@
 #include "relay.h"
 #include "timer.h"
 #include "mode.h"
+#include "debug.h"
+
+
+/************************************************
+                SAFETY LIMIT
+************************************************/
+
+/*
+ * Maximum amount of time the relay is allowed
+ * to remain ON during a QuickShifter cut.
+ *
+ * Normal modes:
+ *
+ * Mode 1 -> 40 ms
+ * Mode 2 -> 50 ms
+ * Mode 3 -> 60 ms
+ * Mode 4 -> 70 ms
+ * Mode 5 -> 80 ms
+ *
+ * Safety limit:
+ *
+ * 100 ms
+ *
+ * If the normal cut timer somehow fails to
+ * expire, this timer provides an independent
+ * maximum ON-time protection.
+ */
+#define QS_MAX_CUT_TIME_MS    100
 
 
 /************************************************
@@ -11,9 +39,35 @@
 
 static QuickShifterState_t currentState;
 
+
+/************************************************
+                SOFTWARE TIMERS
+************************************************/
+
+/*
+ * Normal QuickShifter cut timer.
+ *
+ * Controls the actual selected cut duration:
+ *
+ * 40 / 50 / 60 / 70 / 80 ms
+ */
 static SoftwareTimer_t relayTimer;
 
+
+/*
+ * Cooldown timer.
+ *
+ * Prevents immediate retriggering after a cut.
+ */
 static SoftwareTimer_t cooldownTimer;
+
+
+/*
+ * Safety timer.
+ *
+ * Independent maximum relay ON-time protection.
+ */
+static SoftwareTimer_t safetyTimer;
 
 
 /************************************************
@@ -46,6 +100,7 @@ void QuickShifter_Task(void)
 {
     switch(currentState)
     {
+
         /****************************************
                     IDLE
         ****************************************/
@@ -55,7 +110,8 @@ void QuickShifter_Task(void)
             /*
              * Relay must be OFF while idle.
              *
-             * This is a safety invariant.
+             * A valid debounced button press
+             * starts a new QuickShifter cut.
              */
             if(Button_GetPress())
             {
@@ -65,15 +121,38 @@ void QuickShifter_Task(void)
 
                 Relay_On();
 
+
                 /*
-                 * Load the currently selected
-                 * QuickShifter cut duration.
+                 * Start the normal QuickShifter
+                 * cut timer.
+                 *
+                 * Duration comes from the current
+                 * selected mode.
+                 *
+                 * 40 / 50 / 60 / 70 / 80 ms
                  */
                 SoftwareTimer_Start(
                     &relayTimer,
                     Mode_GetCutTime()
                 );
 
+
+                /*
+                 * Start the independent safety timer.
+                 *
+                 * Even if the normal timer fails,
+                 * the relay must not remain ON longer
+                 * than QS_MAX_CUT_TIME_MS.
+                 */
+                SoftwareTimer_Start(
+                    &safetyTimer,
+                    QS_MAX_CUT_TIME_MS
+                );
+
+
+                /*
+                 * Enter active cut state.
+                 */
                 currentState =
                     QS_STATE_CUT_ACTIVE;
             }
@@ -88,31 +167,88 @@ void QuickShifter_Task(void)
         case QS_STATE_CUT_ACTIVE:
 
             /*
-             * Relay remains ON during the cut.
+             * Relay is currently ON.
              *
-             * We don't repeatedly call Relay_On()
-             * because it was already activated when
-             * entering this state.
+             * Two timers are running:
+             *
+             * 1. relayTimer
+             *    -> normal 40-80 ms cut
+             *
+             * 2. safetyTimer
+             *    -> absolute 100 ms limit
              */
 
+
+            /************************************
+                    SAFETY TIMER CHECK
+            ************************************/
+
+            /*
+             * Check the safety timer FIRST.
+             *
+             * If this expires, something has gone
+             * wrong with the normal timing path.
+             */
+            if(SoftwareTimer_Expired(&safetyTimer))
+            {
+                /*
+                 * EMERGENCY ACTION:
+                 *
+                 * Immediately turn the relay OFF.
+                 */
+                Relay_Off();
+
+
+                /*
+                 * Report the fault through UART.
+                 */
+                Debug_Log(
+                    "[FAULT] Maximum cut time exceeded\r\n"
+                );
+
+
+                /*
+                 * Enter latched FAULT state.
+                 */
+                currentState =
+                    QS_STATE_FAULT;
+
+                break;
+            }
+
+
+            /************************************
+                    NORMAL TIMER CHECK
+            ************************************/
+
+            /*
+             * Check the normal QuickShifter timer.
+             */
             if(SoftwareTimer_Expired(&relayTimer))
             {
                 /*
-                 * Cut duration has expired.
+                 * Normal cut duration has expired.
                  *
                  * Immediately disable the relay.
                  */
                 Relay_Off();
 
+
                 /*
-                 * Start a short cooldown period
-                 * to prevent immediate retriggering.
+                 * Start the cooldown period.
+                 *
+                 * This prevents an immediate
+                 * retrigger after the cut.
                  */
                 SoftwareTimer_Start(
                     &cooldownTimer,
                     100
                 );
 
+
+                /*
+                 * Move to cooldown state.
+                 */
                 currentState =
                     QS_STATE_COOLDOWN;
             }
@@ -130,11 +266,18 @@ void QuickShifter_Task(void)
              * Relay was already turned OFF when
              * entering this state.
              *
-             * Ignore additional shift presses.
+             * Additional shift presses are ignored
+             * during cooldown.
              */
 
             if(SoftwareTimer_Expired(&cooldownTimer))
             {
+                /*
+                 * Cooldown finished.
+                 *
+                 * Now wait for the original button
+                 * press to be completely released.
+                 */
                 currentState =
                     QS_STATE_WAIT_RELEASE;
             }
@@ -165,17 +308,38 @@ void QuickShifter_Task(void)
 
 
         /****************************************
+                    FAULT
+        ****************************************/
+
+        case QS_STATE_FAULT:
+
+            /*
+             * FAIL-SAFE STATE
+             *
+             * Relay MUST remain OFF.
+             *
+             * No further QuickShifter cuts are
+             * allowed while the system is in FAULT.
+             */
+            Relay_Off();
+
+            break;
+
+
+        /****************************************
                     INVALID STATE
         ****************************************/
 
         default:
 
             /*
-             * Fail-safe behavior.
+             * FAIL-SAFE BEHAVIOR
              *
-             * If the state machine ever reaches an
-             * invalid state, immediately disable
-             * the relay.
+             * If the state machine ever reaches
+             * an invalid state:
+             *
+             * 1. Turn relay OFF immediately.
+             * 2. Return to a known safe state.
              */
             Relay_Off();
 

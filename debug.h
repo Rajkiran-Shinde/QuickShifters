@@ -3,6 +3,7 @@
 
 #include "common.h"
 
+
 /************************************************
                 DEBUG
 ************************************************/
@@ -19,6 +20,10 @@ void Debug_LogState(uint8_t state);
 
 void Debug_LogShift(uint16_t shift_time);
 
-void Debug_LogMode(uint8_t mode, uint16_t cut_time);
+void Debug_LogMode(
+    uint8_t mode,
+    uint16_t cut_time
+);
+
 
 #endif

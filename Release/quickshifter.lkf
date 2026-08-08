@@ -62,6 +62,7 @@ Release\relay.o
 Release\software_timer.o
 Release\timer.o
 Release\uart.o
+Release\watchdog.o
 #<END OBJECT_FILES>
 
 

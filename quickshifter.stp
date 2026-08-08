@@ -294,6 +294,16 @@ Next=Root.Documentation.02_statemachine.md
 [Root.Documentation.02_statemachine.md]
 ElemType=File
 PathName=02_statemachine.md
+Next=Root.Documentation.03_modeselection.md
+
+[Root.Documentation.03_modeselection.md]
+ElemType=File
+PathName=03_modeselection.md
+Next=Root.Documentation.pin_config.md
+
+[Root.Documentation.pin_config.md]
+ElemType=File
+PathName=pin_config.md
 
 [Root.Include]
 ElemType=Folder
@@ -387,11 +397,26 @@ Next=Root.Include.config.h
 [Root.Include.config.h]
 ElemType=File
 PathName=config.h
+Next=Root.Include.debug.h
+
+[Root.Include.debug.h]
+ElemType=File
+PathName=debug.h
+Next=Root.Include.eeprom.h
+
+[Root.Include.eeprom.h]
+ElemType=File
+PathName=eeprom.h
 Next=Root.Include.gpio.h
 
 [Root.Include.gpio.h]
 ElemType=File
 PathName=gpio.h
+Next=Root.Include.mode.h
+
+[Root.Include.mode.h]
+ElemType=File
+PathName=mode.h
 Next=Root.Include.quickshifter.h
 
 [Root.Include.quickshifter.h]
@@ -417,6 +442,16 @@ Next=Root.Include.timer.h
 [Root.Include.timer.h]
 ElemType=File
 PathName=timer.h
+Next=Root.Include.uart.h
+
+[Root.Include.uart.h]
+ElemType=File
+PathName=uart.h
+Next=Root.Include.watchdog.h
+
+[Root.Include.watchdog.h]
+ElemType=File
+PathName=watchdog.h
 
 [Root.Source Files]
 ElemType=Folder
@@ -499,6 +534,16 @@ Next=Root.Source Files.clock.c
 [Root.Source Files.clock.c]
 ElemType=File
 PathName=clock.c
+Next=Root.Source Files.debug.c
+
+[Root.Source Files.debug.c]
+ElemType=File
+PathName=debug.c
+Next=Root.Source Files.eeprom.c
+
+[Root.Source Files.eeprom.c]
+ElemType=File
+PathName=eeprom.c
 Next=Root.Source Files.gpio.c
 
 [Root.Source Files.gpio.c]
@@ -509,6 +554,11 @@ Next=Root.Source Files.main.c
 [Root.Source Files.main.c]
 ElemType=File
 PathName=main.c
+Next=Root.Source Files.mode.c
+
+[Root.Source Files.mode.c]
+ElemType=File
+PathName=mode.c
 Next=Root.Source Files.quickshifter.c
 
 [Root.Source Files.quickshifter.c]
@@ -534,3 +584,13 @@ Next=Root.Source Files.timer.c
 [Root.Source Files.timer.c]
 ElemType=File
 PathName=timer.c
+Next=Root.Source Files.uart.c
+
+[Root.Source Files.uart.c]
+ElemType=File
+PathName=uart.c
+Next=Root.Source Files.watchdog.c
+
+[Root.Source Files.watchdog.c]
+ElemType=File
+PathName=watchdog.c

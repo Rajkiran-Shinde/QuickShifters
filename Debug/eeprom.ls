@@ -1,471 +1,682 @@
    1                     ; C Compiler for STM8 (COSMIC Software)
    2                     ; Parser V4.13.3 - 22 May 2025
    3                     ; Generator (Limited) V4.6.6 - 07 Jan 2026
-  42                     ; 31 static void EEPROM_Unlock(void)
-  42                     ; 32 {
-  44                     	switch	.text
-  45  0000               L3_EEPROM_Unlock:
-  49                     ; 33     if((FLASH_IAPSR & FLASH_IAPSR_DUL) == 0)
-  51  0000 c6505f        	ld	a,20575
-  52  0003 a508          	bcp	a,#8
-  53  0005 260f          	jrne	L32
-  54                     ; 35         FLASH_DUKR = 0xAE;
-  56  0007 35ae5064      	mov	20580,#174
-  57                     ; 36         FLASH_DUKR = 0x56;
-  59  000b 35565064      	mov	20580,#86
-  61  000f               L13:
-  62                     ; 42         while((FLASH_IAPSR & FLASH_IAPSR_DUL) == 0)
-  64  000f c6505f        	ld	a,20575
-  65  0012 a508          	bcp	a,#8
-  66  0014 27f9          	jreq	L13
-  67  0016               L32:
-  68                     ; 47 }
-  71  0016 81            	ret
- 106                     ; 57 static uint8_t EEPROM_CalculateChecksum(uint8_t mode)
- 106                     ; 58 {
- 107                     	switch	.text
- 108  0017               L53_EEPROM_CalculateChecksum:
- 112                     ; 59     return (uint8_t)(EEPROM_MAGIC ^ mode ^ 0x5A);
- 114  0017 a8a5          	xor	a,#165
- 115  0019 a85a          	xor	a,#90
- 118  001b 81            	ret
- 141                     ; 66 void EEPROM_Init(void)
- 141                     ; 67 {
- 142                     	switch	.text
- 143  001c               _EEPROM_Init:
- 147                     ; 69 }
- 150  001c 81            	ret
- 193                     ; 75 uint8_t EEPROM_ReadByte(uint16_t address)
- 193                     ; 76 {
- 194                     	switch	.text
- 195  001d               _EEPROM_ReadByte:
- 197  001d 88            	push	a
- 198       00000001      OFST:	set	1
- 201                     ; 79     value = (*(volatile uint8_t*)address);
- 203  001e f6            	ld	a,(x)
- 204  001f 6b01          	ld	(OFST+0,sp),a
- 206                     ; 81     return value;
- 208  0021 7b01          	ld	a,(OFST+0,sp)
- 211  0023 5b01          	addw	sp,#1
- 212  0025 81            	ret
- 256                     ; 87 uint8_t EEPROM_WriteByte(uint16_t address, uint8_t value)
- 256                     ; 88 {
- 257                     	switch	.text
- 258  0026               _EEPROM_WriteByte:
- 260  0026 89            	pushw	x
- 261       00000000      OFST:	set	0
- 264                     ; 89     EEPROM_Unlock();
- 266  0027 add7          	call	L3_EEPROM_Unlock
- 268                     ; 97     (*(volatile uint8_t*)address) = value;
- 270  0029 7b05          	ld	a,(OFST+5,sp)
- 271  002b 1e01          	ldw	x,(OFST+1,sp)
- 272  002d f7            	ld	(x),a
- 274  002e               L531:
- 275                     ; 102     while((FLASH_IAPSR & FLASH_IAPSR_EOP) == 0)
- 277  002e c6505f        	ld	a,20575
- 278  0031 a504          	bcp	a,#4
- 279  0033 27f9          	jreq	L531
- 280                     ; 107     return TRUE;
- 282  0035 a601          	ld	a,#1
- 285  0037 85            	popw	x
- 286  0038 81            	ret
- 352                     ; 125 uint8_t EEPROM_LoadMode(void)
- 352                     ; 126 {
- 353                     	switch	.text
- 354  0039               _EEPROM_LoadMode:
- 356  0039 5203          	subw	sp,#3
- 357       00000003      OFST:	set	3
- 360                     ; 132     Debug_Log("[EEPROM] Loading configuration...\r\n");
- 362  003b ae0357        	ldw	x,#L371
- 363  003e cd0000        	call	_Debug_Log
- 365                     ; 134     magic = EEPROM_ReadByte(EEPROM_MAGIC_ADDRESS);
- 367  0041 ae4000        	ldw	x,#16384
- 368  0044 add7          	call	_EEPROM_ReadByte
- 370  0046 6b03          	ld	(OFST+0,sp),a
- 372                     ; 135     mode = EEPROM_ReadByte(EEPROM_MODE_ADDRESS);
- 374  0048 ae4001        	ldw	x,#16385
- 375  004b add0          	call	_EEPROM_ReadByte
- 377  004d 6b02          	ld	(OFST-1,sp),a
- 379                     ; 136     checksum = EEPROM_ReadByte(EEPROM_CHECKSUM_ADDRESS);
- 381  004f ae4002        	ldw	x,#16386
- 382  0052 adc9          	call	_EEPROM_ReadByte
- 384  0054 6b01          	ld	(OFST-2,sp),a
- 386                     ; 138     Debug_Log("[EEPROM] Magic: 0x");
- 388  0056 ae0344        	ldw	x,#L571
- 389  0059 cd0000        	call	_Debug_Log
- 391                     ; 139     Debug_LogHex(magic);
- 393  005c 7b03          	ld	a,(OFST+0,sp)
- 394  005e cd0000        	call	_Debug_LogHex
- 396                     ; 140     Debug_Log("\r\n");
- 398  0061 ae0341        	ldw	x,#L771
- 399  0064 cd0000        	call	_Debug_Log
- 401                     ; 142     Debug_Log("[EEPROM] Mode: ");
- 403  0067 ae0331        	ldw	x,#L102
- 404  006a cd0000        	call	_Debug_Log
- 406                     ; 143     Debug_LogDecimal(mode);
- 408  006d 7b02          	ld	a,(OFST-1,sp)
- 409  006f cd0000        	call	_Debug_LogDecimal
- 411                     ; 144     Debug_Log("\r\n");
- 413  0072 ae0341        	ldw	x,#L771
- 414  0075 cd0000        	call	_Debug_Log
- 416                     ; 146     Debug_Log("[EEPROM] Checksum: 0x");
- 418  0078 ae031b        	ldw	x,#L302
- 419  007b cd0000        	call	_Debug_Log
- 421                     ; 147     Debug_LogHex(checksum);
- 423  007e 7b01          	ld	a,(OFST-2,sp)
- 424  0080 cd0000        	call	_Debug_LogHex
- 426                     ; 148     Debug_Log("\r\n");
- 428  0083 ae0341        	ldw	x,#L771
- 429  0086 cd0000        	call	_Debug_Log
- 431                     ; 154     if(magic != EEPROM_MAGIC)
- 433  0089 7b03          	ld	a,(OFST+0,sp)
- 434  008b a1a5          	cp	a,#165
- 435  008d 2715          	jreq	L502
- 436                     ; 156         Debug_Log("[EEPROM] ERROR: Invalid magic number\r\n");
- 438  008f ae02f4        	ldw	x,#L702
- 439  0092 cd0000        	call	_Debug_Log
- 441                     ; 157         Debug_Log("[EEPROM] No valid configuration found\r\n");
- 443  0095 ae02cc        	ldw	x,#L112
- 444  0098 cd0000        	call	_Debug_Log
- 446                     ; 158         Debug_Log("[EEPROM] Using default Mode 1\r\n");
- 448  009b ae02ac        	ldw	x,#L312
- 449  009e cd0000        	call	_Debug_Log
- 451                     ; 160         return 0;
- 453  00a1 4f            	clr	a
- 455  00a2 2013          	jra	L02
- 456  00a4               L502:
- 457                     ; 167     if(mode > 4)
- 459  00a4 7b02          	ld	a,(OFST-1,sp)
- 460  00a6 a105          	cp	a,#5
- 461  00a8 2510          	jrult	L512
- 462                     ; 169         Debug_Log("[EEPROM] ERROR: Invalid mode value\r\n");
- 464  00aa ae0287        	ldw	x,#L712
- 465  00ad cd0000        	call	_Debug_Log
- 467                     ; 170         Debug_Log("[EEPROM] Using default Mode 1\r\n");
- 469  00b0 ae02ac        	ldw	x,#L312
- 470  00b3 cd0000        	call	_Debug_Log
- 472                     ; 172         return 0;
- 474  00b6 4f            	clr	a
- 476  00b7               L02:
- 478  00b7 5b03          	addw	sp,#3
- 479  00b9 81            	ret
- 480  00ba               L512:
- 481                     ; 179     expectedChecksum = EEPROM_CalculateChecksum(mode);
- 483  00ba 7b02          	ld	a,(OFST-1,sp)
- 484  00bc cd0017        	call	L53_EEPROM_CalculateChecksum
- 486  00bf 6b03          	ld	(OFST+0,sp),a
- 488                     ; 181     Debug_Log("[EEPROM] Expected checksum: 0x");
- 490  00c1 ae0268        	ldw	x,#L122
- 491  00c4 cd0000        	call	_Debug_Log
- 493                     ; 182     Debug_LogHex(expectedChecksum);
- 495  00c7 7b03          	ld	a,(OFST+0,sp)
- 496  00c9 cd0000        	call	_Debug_LogHex
- 498                     ; 183     Debug_Log("\r\n");
- 500  00cc ae0341        	ldw	x,#L771
- 501  00cf cd0000        	call	_Debug_Log
- 503                     ; 189     if(checksum != expectedChecksum)
- 505  00d2 7b01          	ld	a,(OFST-2,sp)
- 506  00d4 1103          	cp	a,(OFST+0,sp)
- 507  00d6 2715          	jreq	L322
- 508                     ; 191         Debug_Log("[EEPROM] ERROR: Checksum mismatch\r\n");
- 510  00d8 ae0244        	ldw	x,#L522
- 511  00db cd0000        	call	_Debug_Log
- 513                     ; 192         Debug_Log("[EEPROM] EEPROM data may be corrupted\r\n");
- 515  00de ae021c        	ldw	x,#L722
- 516  00e1 cd0000        	call	_Debug_Log
- 518                     ; 193         Debug_Log("[EEPROM] Using default Mode 1\r\n");
- 520  00e4 ae02ac        	ldw	x,#L312
- 521  00e7 cd0000        	call	_Debug_Log
- 523                     ; 195         return 0;
- 525  00ea 4f            	clr	a
- 527  00eb 20ca          	jra	L02
- 528  00ed               L322:
- 529                     ; 202     Debug_Log("[EEPROM] Configuration VALID\r\n");
- 531  00ed ae01fd        	ldw	x,#L132
- 532  00f0 cd0000        	call	_Debug_Log
- 534                     ; 204     Debug_Log("[EEPROM] Restoring Mode: ");
- 536  00f3 ae01e3        	ldw	x,#L332
- 537  00f6 cd0000        	call	_Debug_Log
- 539                     ; 205     Debug_LogDecimal(mode);
- 541  00f9 7b02          	ld	a,(OFST-1,sp)
- 542  00fb cd0000        	call	_Debug_LogDecimal
- 544                     ; 206     Debug_Log("\r\n");
- 546  00fe ae0341        	ldw	x,#L771
- 547  0101 cd0000        	call	_Debug_Log
- 549                     ; 208     return mode;
- 551  0104 7b02          	ld	a,(OFST-1,sp)
- 553  0106 20af          	jra	L02
- 629                     ; 214  void EEPROM_SaveMode(uint8_t mode)
- 629                     ; 215 {
- 630                     	switch	.text
- 631  0108               _EEPROM_SaveMode:
- 633  0108 88            	push	a
- 634  0109 5204          	subw	sp,#4
- 635       00000004      OFST:	set	4
- 638                     ; 225     if(mode > 4)
- 640  010b a105          	cp	a,#5
- 641  010d 250a          	jrult	L372
- 642                     ; 227         Debug_Log("[EEPROM] ERROR: Attempted to save invalid mode\r\n");
- 644  010f ae01b2        	ldw	x,#L572
- 645  0112 cd0000        	call	_Debug_Log
- 647                     ; 228         return;
- 649  0115 ac000200      	jpf	L42
- 650  0119               L372:
- 651                     ; 232     Debug_Log("\r\n");
- 653  0119 ae0341        	ldw	x,#L771
- 654  011c cd0000        	call	_Debug_Log
- 656                     ; 233     Debug_Log("[EEPROM] =============================\r\n");
- 658  011f ae0189        	ldw	x,#L772
- 659  0122 cd0000        	call	_Debug_Log
- 661                     ; 234     Debug_Log("[EEPROM] Saving configuration\r\n");
- 663  0125 ae0169        	ldw	x,#L103
- 664  0128 cd0000        	call	_Debug_Log
- 666                     ; 237     Debug_Log("[EEPROM] Mode = ");
- 668  012b ae0158        	ldw	x,#L303
- 669  012e cd0000        	call	_Debug_Log
- 671                     ; 238     Debug_LogDecimal(mode);
- 673  0131 7b05          	ld	a,(OFST+1,sp)
- 674  0133 cd0000        	call	_Debug_LogDecimal
- 676                     ; 239     Debug_Log("\r\n");
- 678  0136 ae0341        	ldw	x,#L771
- 679  0139 cd0000        	call	_Debug_Log
- 681                     ; 242     checksum = EEPROM_CalculateChecksum(mode);
- 683  013c 7b05          	ld	a,(OFST+1,sp)
- 684  013e cd0017        	call	L53_EEPROM_CalculateChecksum
- 686  0141 6b04          	ld	(OFST+0,sp),a
- 688                     ; 244     Debug_Log("[EEPROM] Calculated checksum = 0x");
- 690  0143 ae0136        	ldw	x,#L503
- 691  0146 cd0000        	call	_Debug_Log
- 693                     ; 245     Debug_LogHex(checksum);
- 695  0149 7b04          	ld	a,(OFST+0,sp)
- 696  014b cd0000        	call	_Debug_LogHex
- 698                     ; 246     Debug_Log("\r\n");
- 700  014e ae0341        	ldw	x,#L771
- 701  0151 cd0000        	call	_Debug_Log
- 703                     ; 252     Debug_Log("[EEPROM] Writing MODE...\r\n");
- 705  0154 ae011b        	ldw	x,#L703
- 706  0157 cd0000        	call	_Debug_Log
- 708                     ; 254     EEPROM_WriteByte(
- 708                     ; 255         EEPROM_MODE_ADDRESS,
- 708                     ; 256         mode
- 708                     ; 257     );
- 710  015a 7b05          	ld	a,(OFST+1,sp)
- 711  015c 88            	push	a
- 712  015d ae4001        	ldw	x,#16385
- 713  0160 cd0026        	call	_EEPROM_WriteByte
- 715  0163 84            	pop	a
- 716                     ; 263     Debug_Log("[EEPROM] Writing CHECKSUM...\r\n");
- 718  0164 ae00fc        	ldw	x,#L113
- 719  0167 cd0000        	call	_Debug_Log
- 721                     ; 265     EEPROM_WriteByte(
- 721                     ; 266         EEPROM_CHECKSUM_ADDRESS,
- 721                     ; 267         checksum
- 721                     ; 268     );
- 723  016a 7b04          	ld	a,(OFST+0,sp)
- 724  016c 88            	push	a
- 725  016d ae4002        	ldw	x,#16386
- 726  0170 cd0026        	call	_EEPROM_WriteByte
- 728  0173 84            	pop	a
- 729                     ; 274     Debug_Log("[EEPROM] Writing MAGIC...\r\n");
- 731  0174 ae00e0        	ldw	x,#L313
- 732  0177 cd0000        	call	_Debug_Log
- 734                     ; 276     EEPROM_WriteByte(
- 734                     ; 277         EEPROM_MAGIC_ADDRESS,
- 734                     ; 278         EEPROM_MAGIC
- 734                     ; 279     );
- 736  017a 4ba5          	push	#165
- 737  017c ae4000        	ldw	x,#16384
- 738  017f cd0026        	call	_EEPROM_WriteByte
- 740  0182 84            	pop	a
- 741                     ; 285     Debug_Log("[EEPROM] Verifying EEPROM...\r\n");
- 743  0183 ae00c1        	ldw	x,#L513
- 744  0186 cd0000        	call	_Debug_Log
- 746                     ; 287     readBackMagic =
- 746                     ; 288         EEPROM_ReadByte(EEPROM_MAGIC_ADDRESS);
- 748  0189 ae4000        	ldw	x,#16384
- 749  018c cd001d        	call	_EEPROM_ReadByte
- 751  018f 6b02          	ld	(OFST-2,sp),a
- 753                     ; 290     readBackMode =
- 753                     ; 291         EEPROM_ReadByte(EEPROM_MODE_ADDRESS);
- 755  0191 ae4001        	ldw	x,#16385
- 756  0194 cd001d        	call	_EEPROM_ReadByte
- 758  0197 6b01          	ld	(OFST-3,sp),a
- 760                     ; 293     readBackChecksum =
- 760                     ; 294         EEPROM_ReadByte(EEPROM_CHECKSUM_ADDRESS);
- 762  0199 ae4002        	ldw	x,#16386
- 763  019c cd001d        	call	_EEPROM_ReadByte
- 765  019f 6b03          	ld	(OFST-1,sp),a
- 767                     ; 297     Debug_Log("[EEPROM] Read-back Magic: 0x");
- 769  01a1 ae00a4        	ldw	x,#L713
- 770  01a4 cd0000        	call	_Debug_Log
- 772                     ; 298     Debug_LogHex(readBackMagic);
- 774  01a7 7b02          	ld	a,(OFST-2,sp)
- 775  01a9 cd0000        	call	_Debug_LogHex
- 777                     ; 299     Debug_Log("\r\n");
- 779  01ac ae0341        	ldw	x,#L771
- 780  01af cd0000        	call	_Debug_Log
- 782                     ; 301     Debug_Log("[EEPROM] Read-back Mode: ");
- 784  01b2 ae008a        	ldw	x,#L123
- 785  01b5 cd0000        	call	_Debug_Log
- 787                     ; 302     Debug_LogDecimal(readBackMode);
- 789  01b8 7b01          	ld	a,(OFST-3,sp)
- 790  01ba cd0000        	call	_Debug_LogDecimal
- 792                     ; 303     Debug_Log("\r\n");
- 794  01bd ae0341        	ldw	x,#L771
- 795  01c0 cd0000        	call	_Debug_Log
- 797                     ; 305     Debug_Log("[EEPROM] Read-back Checksum: 0x");
- 799  01c3 ae006a        	ldw	x,#L323
- 800  01c6 cd0000        	call	_Debug_Log
- 802                     ; 306     Debug_LogHex(readBackChecksum);
- 804  01c9 7b03          	ld	a,(OFST-1,sp)
- 805  01cb cd0000        	call	_Debug_LogHex
- 807                     ; 307     Debug_Log("\r\n");
- 809  01ce ae0341        	ldw	x,#L771
- 810  01d1 cd0000        	call	_Debug_Log
- 812                     ; 313     if((readBackMagic == EEPROM_MAGIC) &&
- 812                     ; 314        (readBackMode == mode) &&
- 812                     ; 315        (readBackChecksum == checksum))
- 814  01d4 7b02          	ld	a,(OFST-2,sp)
- 815  01d6 a1a5          	cp	a,#165
- 816  01d8 261a          	jrne	L523
- 818  01da 7b01          	ld	a,(OFST-3,sp)
- 819  01dc 1105          	cp	a,(OFST+1,sp)
- 820  01de 2614          	jrne	L523
- 822  01e0 7b03          	ld	a,(OFST-1,sp)
- 823  01e2 1104          	cp	a,(OFST+0,sp)
- 824  01e4 260e          	jrne	L523
- 825                     ; 317         Debug_Log("[EEPROM] SAVE SUCCESS\r\n");
- 827  01e6 ae0052        	ldw	x,#L723
- 828  01e9 cd0000        	call	_Debug_Log
- 830                     ; 318         Debug_Log("[EEPROM] Configuration verified OK\r\n");
- 832  01ec ae002d        	ldw	x,#L133
- 833  01ef cd0000        	call	_Debug_Log
- 836  01f2 2006          	jra	L333
- 837  01f4               L523:
- 838                     ; 322         Debug_Log("[EEPROM] ERROR: EEPROM verification FAILED\r\n");
- 840  01f4 ae0000        	ldw	x,#L533
- 841  01f7 cd0000        	call	_Debug_Log
- 843  01fa               L333:
- 844                     ; 326     Debug_Log("[EEPROM] =============================\r\n");
- 846  01fa ae0189        	ldw	x,#L772
- 847  01fd cd0000        	call	_Debug_Log
- 849                     ; 327 }
- 850  0200               L42:
- 853  0200 5b05          	addw	sp,#5
- 854  0202 81            	ret
- 867                     	xref	_Debug_LogDecimal
- 868                     	xref	_Debug_LogHex
- 869                     	xref	_Debug_Log
- 870                     	xdef	_EEPROM_SaveMode
- 871                     	xdef	_EEPROM_LoadMode
- 872                     	xdef	_EEPROM_WriteByte
- 873                     	xdef	_EEPROM_ReadByte
- 874                     	xdef	_EEPROM_Init
- 875                     .const:	section	.text
- 876  0000               L533:
- 877  0000 5b454550524f  	dc.b	"[EEPROM] ERROR: EE"
- 878  0012 50524f4d2076  	dc.b	"PROM verification "
- 879  0024 4641494c4544  	dc.b	"FAILED",13
- 880  002b 0a00          	dc.b	10,0
- 881  002d               L133:
- 882  002d 5b454550524f  	dc.b	"[EEPROM] Configura"
- 883  003f 74696f6e2076  	dc.b	"tion verified OK",13
- 884  0050 0a00          	dc.b	10,0
- 885  0052               L723:
- 886  0052 5b454550524f  	dc.b	"[EEPROM] SAVE SUCC"
- 887  0064 4553530d      	dc.b	"ESS",13
- 888  0068 0a00          	dc.b	10,0
- 889  006a               L323:
- 890  006a 5b454550524f  	dc.b	"[EEPROM] Read-back"
- 891  007c 20436865636b  	dc.b	" Checksum: 0x",0
- 892  008a               L123:
- 893  008a 5b454550524f  	dc.b	"[EEPROM] Read-back"
- 894  009c 204d6f64653a  	dc.b	" Mode: ",0
- 895  00a4               L713:
- 896  00a4 5b454550524f  	dc.b	"[EEPROM] Read-back"
- 897  00b6 204d61676963  	dc.b	" Magic: 0x",0
- 898  00c1               L513:
- 899  00c1 5b454550524f  	dc.b	"[EEPROM] Verifying"
- 900  00d3 20454550524f  	dc.b	" EEPROM...",13
- 901  00de 0a00          	dc.b	10,0
- 902  00e0               L313:
- 903  00e0 5b454550524f  	dc.b	"[EEPROM] Writing M"
- 904  00f2 414749432e2e  	dc.b	"AGIC...",13
- 905  00fa 0a00          	dc.b	10,0
- 906  00fc               L113:
- 907  00fc 5b454550524f  	dc.b	"[EEPROM] Writing C"
- 908  010e 4845434b5355  	dc.b	"HECKSUM...",13
- 909  0119 0a00          	dc.b	10,0
- 910  011b               L703:
- 911  011b 5b454550524f  	dc.b	"[EEPROM] Writing M"
- 912  012d 4f44452e2e2e  	dc.b	"ODE...",13
- 913  0134 0a00          	dc.b	10,0
- 914  0136               L503:
- 915  0136 5b454550524f  	dc.b	"[EEPROM] Calculate"
- 916  0148 642063686563  	dc.b	"d checksum = 0x",0
- 917  0158               L303:
- 918  0158 5b454550524f  	dc.b	"[EEPROM] Mode = ",0
- 919  0169               L103:
- 920  0169 5b454550524f  	dc.b	"[EEPROM] Saving co"
- 921  017b 6e6669677572  	dc.b	"nfiguration",13
- 922  0187 0a00          	dc.b	10,0
- 923  0189               L772:
- 924  0189 5b454550524f  	dc.b	"[EEPROM] ========="
- 925  019b 3d3d3d3d3d3d  	dc.b	"=================="
- 926  01ad 3d3d0d        	dc.b	"==",13
- 927  01b0 0a00          	dc.b	10,0
- 928  01b2               L572:
- 929  01b2 5b454550524f  	dc.b	"[EEPROM] ERROR: At"
- 930  01c4 74656d707465  	dc.b	"tempted to save in"
- 931  01d6 76616c696420  	dc.b	"valid mode",13
- 932  01e1 0a00          	dc.b	10,0
- 933  01e3               L332:
- 934  01e3 5b454550524f  	dc.b	"[EEPROM] Restoring"
- 935  01f5 204d6f64653a  	dc.b	" Mode: ",0
- 936  01fd               L132:
- 937  01fd 5b454550524f  	dc.b	"[EEPROM] Configura"
- 938  020f 74696f6e2056  	dc.b	"tion VALID",13
- 939  021a 0a00          	dc.b	10,0
- 940  021c               L722:
- 941  021c 5b454550524f  	dc.b	"[EEPROM] EEPROM da"
- 942  022e 7461206d6179  	dc.b	"ta may be corrupte"
- 943  0240 640d          	dc.b	"d",13
- 944  0242 0a00          	dc.b	10,0
- 945  0244               L522:
- 946  0244 5b454550524f  	dc.b	"[EEPROM] ERROR: Ch"
- 947  0256 65636b73756d  	dc.b	"ecksum mismatch",13
- 948  0266 0a00          	dc.b	10,0
- 949  0268               L122:
- 950  0268 5b454550524f  	dc.b	"[EEPROM] Expected "
- 951  027a 636865636b73  	dc.b	"checksum: 0x",0
- 952  0287               L712:
- 953  0287 5b454550524f  	dc.b	"[EEPROM] ERROR: In"
- 954  0299 76616c696420  	dc.b	"valid mode value",13
- 955  02aa 0a00          	dc.b	10,0
- 956  02ac               L312:
- 957  02ac 5b454550524f  	dc.b	"[EEPROM] Using def"
- 958  02be 61756c74204d  	dc.b	"ault Mode 1",13
- 959  02ca 0a00          	dc.b	10,0
- 960  02cc               L112:
- 961  02cc 5b454550524f  	dc.b	"[EEPROM] No valid "
- 962  02de 636f6e666967  	dc.b	"configuration foun"
- 963  02f0 640d          	dc.b	"d",13
- 964  02f2 0a00          	dc.b	10,0
- 965  02f4               L702:
- 966  02f4 5b454550524f  	dc.b	"[EEPROM] ERROR: In"
- 967  0306 76616c696420  	dc.b	"valid magic number"
- 968  0318 0d0a00        	dc.b	13,10,0
- 969  031b               L302:
- 970  031b 5b454550524f  	dc.b	"[EEPROM] Checksum:"
- 971  032d 20307800      	dc.b	" 0x",0
- 972  0331               L102:
- 973  0331 5b454550524f  	dc.b	"[EEPROM] Mode: ",0
- 974  0341               L771:
- 975  0341 0d0a00        	dc.b	13,10,0
- 976  0344               L571:
- 977  0344 5b454550524f  	dc.b	"[EEPROM] Magic: 0x",0
- 978  0357               L371:
- 979  0357 5b454550524f  	dc.b	"[EEPROM] Loading c"
- 980  0369 6f6e66696775  	dc.b	"onfiguration...",13
- 981  0379 0a00          	dc.b	10,0
-1001                     	end
+  43                     ; 26 static void EEPROM_Unlock(void)
+  43                     ; 27 {
+  45                     	switch	.text
+  46  0000               L3_EEPROM_Unlock:
+  50                     ; 28     if((FLASH_IAPSR & FLASH_IAPSR_DUL) == 0)
+  52  0000 c6505f        	ld	a,20575
+  53  0003 a508          	bcp	a,#8
+  54  0005 2614          	jrne	L32
+  55                     ; 30         FLASH_DUKR = 0xAE;
+  57  0007 35ae5064      	mov	20580,#174
+  58                     ; 31         FLASH_DUKR = 0x56;
+  60  000b 35565064      	mov	20580,#86
+  62  000f 2003          	jra	L13
+  63  0011               L52:
+  64                     ; 40             Watchdog_Refresh();
+  66  0011 cd0000        	call	_Watchdog_Refresh
+  68  0014               L13:
+  69                     ; 33         while((FLASH_IAPSR & FLASH_IAPSR_DUL) == 0)
+  71  0014 c6505f        	ld	a,20575
+  72  0017 a508          	bcp	a,#8
+  73  0019 27f6          	jreq	L52
+  74  001b               L32:
+  75                     ; 43 }
+  78  001b 81            	ret
+ 113                     ; 51 static uint8_t EEPROM_CalculateChecksum(
+ 113                     ; 52     uint8_t mode
+ 113                     ; 53 )
+ 113                     ; 54 {
+ 114                     	switch	.text
+ 115  001c               L53_EEPROM_CalculateChecksum:
+ 119                     ; 55     return (uint8_t)(
+ 119                     ; 56         EEPROM_MAGIC ^
+ 119                     ; 57         mode ^
+ 119                     ; 58         0x5A
+ 119                     ; 59     );
+ 121  001c a8a6          	xor	a,#166
+ 122  001e a85a          	xor	a,#90
+ 125  0020 81            	ret
+ 160                     ; 70 static uint8_t EEPROM_CalculateLegacyChecksum(
+ 160                     ; 71     uint8_t mode
+ 160                     ; 72 )
+ 160                     ; 73 {
+ 161                     	switch	.text
+ 162  0021               L55_EEPROM_CalculateLegacyChecksum:
+ 166                     ; 74     return (uint8_t)(
+ 166                     ; 75         EEPROM_LEGACY_MAGIC ^
+ 166                     ; 76         mode ^
+ 166                     ; 77         0x5A
+ 166                     ; 78     );
+ 168  0021 a8a5          	xor	a,#165
+ 169  0023 a85a          	xor	a,#90
+ 172  0025 81            	ret
+ 195                     ; 86 void EEPROM_Init(void)
+ 195                     ; 87 {
+ 196                     	switch	.text
+ 197  0026               _EEPROM_Init:
+ 201                     ; 93 }
+ 204  0026 81            	ret
+ 247                     ; 100 uint8_t EEPROM_ReadByte(
+ 247                     ; 101     uint16_t address
+ 247                     ; 102 )
+ 247                     ; 103 {
+ 248                     	switch	.text
+ 249  0027               _EEPROM_ReadByte:
+ 251  0027 88            	push	a
+ 252       00000001      OFST:	set	1
+ 255                     ; 106     value = (*(volatile uint8_t*)address);
+ 257  0028 f6            	ld	a,(x)
+ 258  0029 6b01          	ld	(OFST+0,sp),a
+ 260                     ; 108     return value;
+ 262  002b 7b01          	ld	a,(OFST+0,sp)
+ 265  002d 5b01          	addw	sp,#1
+ 266  002f 81            	ret
+ 311                     ; 116 uint8_t EEPROM_WriteByte(
+ 311                     ; 117     uint16_t address,
+ 311                     ; 118     uint8_t value
+ 311                     ; 119 )
+ 311                     ; 120 {
+ 312                     	switch	.text
+ 313  0030               _EEPROM_WriteByte:
+ 315  0030 89            	pushw	x
+ 316       00000000      OFST:	set	0
+ 319                     ; 124     EEPROM_Unlock();
+ 321  0031 adcd          	call	L3_EEPROM_Unlock
+ 323                     ; 130     (*(volatile uint8_t*)address) = value;
+ 325  0033 7b05          	ld	a,(OFST+5,sp)
+ 326  0035 1e01          	ldw	x,(OFST+1,sp)
+ 327  0037 f7            	ld	(x),a
+ 329  0038 2003          	jra	L551
+ 330  003a               L151:
+ 331                     ; 141         Watchdog_Refresh();
+ 333  003a cd0000        	call	_Watchdog_Refresh
+ 335  003d               L551:
+ 336                     ; 139     while((FLASH_IAPSR & FLASH_IAPSR_EOP) == 0)
+ 338  003d c6505f        	ld	a,20575
+ 339  0040 a504          	bcp	a,#4
+ 340  0042 27f6          	jreq	L151
+ 341                     ; 148     Watchdog_Refresh();
+ 343  0044 cd0000        	call	_Watchdog_Refresh
+ 345                     ; 151     return TRUE;
+ 347  0047 a601          	ld	a,#1
+ 350  0049 85            	popw	x
+ 351  004a 81            	ret
+ 428                     ; 159 uint8_t EEPROM_LoadMode(void)
+ 428                     ; 160 {
+ 429                     	switch	.text
+ 430  004b               _EEPROM_LoadMode:
+ 432  004b 5203          	subw	sp,#3
+ 433       00000003      OFST:	set	3
+ 436                     ; 167     Debug_Log(
+ 436                     ; 168         "[EEPROM] Loading configuration...\r\n"
+ 436                     ; 169     );
+ 438  004d ae03dc        	ldw	x,#L712
+ 439  0050 cd0000        	call	_Debug_Log
+ 441                     ; 176     magic =
+ 441                     ; 177         EEPROM_ReadByte(
+ 441                     ; 178             EEPROM_MAGIC_ADDRESS
+ 441                     ; 179         );
+ 443  0053 ae4000        	ldw	x,#16384
+ 444  0056 adcf          	call	_EEPROM_ReadByte
+ 446  0058 6b02          	ld	(OFST-1,sp),a
+ 448                     ; 181     mode =
+ 448                     ; 182         EEPROM_ReadByte(
+ 448                     ; 183             EEPROM_MODE_ADDRESS
+ 448                     ; 184         );
+ 450  005a ae4001        	ldw	x,#16385
+ 451  005d adc8          	call	_EEPROM_ReadByte
+ 453  005f 6b03          	ld	(OFST+0,sp),a
+ 455                     ; 186     checksum =
+ 455                     ; 187         EEPROM_ReadByte(
+ 455                     ; 188             EEPROM_CHECKSUM_ADDRESS
+ 455                     ; 189         );
+ 457  0061 ae4002        	ldw	x,#16386
+ 458  0064 adc1          	call	_EEPROM_ReadByte
+ 460  0066 6b01          	ld	(OFST-2,sp),a
+ 462                     ; 196     Debug_Log("[EEPROM] Magic: 0x");
+ 464  0068 ae03c9        	ldw	x,#L122
+ 465  006b cd0000        	call	_Debug_Log
+ 467                     ; 197     Debug_LogHex(magic);
+ 469  006e 7b02          	ld	a,(OFST-1,sp)
+ 470  0070 cd0000        	call	_Debug_LogHex
+ 472                     ; 198     Debug_Log("\r\n");
+ 474  0073 ae03c6        	ldw	x,#L322
+ 475  0076 cd0000        	call	_Debug_Log
+ 477                     ; 200     Debug_Log("[EEPROM] Stored Mode: ");
+ 479  0079 ae03af        	ldw	x,#L522
+ 480  007c cd0000        	call	_Debug_Log
+ 482                     ; 201     Debug_LogDecimal(mode);
+ 484  007f 7b03          	ld	a,(OFST+0,sp)
+ 485  0081 cd0000        	call	_Debug_LogDecimal
+ 487                     ; 202     Debug_Log("\r\n");
+ 489  0084 ae03c6        	ldw	x,#L322
+ 490  0087 cd0000        	call	_Debug_Log
+ 492                     ; 204     Debug_Log("[EEPROM] Checksum: 0x");
+ 494  008a ae0399        	ldw	x,#L722
+ 495  008d cd0000        	call	_Debug_Log
+ 497                     ; 205     Debug_LogHex(checksum);
+ 499  0090 7b01          	ld	a,(OFST-2,sp)
+ 500  0092 cd0000        	call	_Debug_LogHex
+ 502                     ; 206     Debug_Log("\r\n");
+ 504  0095 ae03c6        	ldw	x,#L322
+ 505  0098 cd0000        	call	_Debug_Log
+ 507                     ; 213     if(magic == EEPROM_MAGIC)
+ 509  009b 7b02          	ld	a,(OFST-1,sp)
+ 510  009d a1a6          	cp	a,#166
+ 511  009f 2664          	jrne	L132
+ 512                     ; 219         if(
+ 512                     ; 220             (mode < EEPROM_MIN_MODE) ||
+ 512                     ; 221             (mode > EEPROM_MAX_MODE)
+ 512                     ; 222         )
+ 514  00a1 0d03          	tnz	(OFST+0,sp)
+ 515  00a3 2706          	jreq	L532
+ 517  00a5 7b03          	ld	a,(OFST+0,sp)
+ 518  00a7 a106          	cp	a,#6
+ 519  00a9 2510          	jrult	L332
+ 520  00ab               L532:
+ 521                     ; 224             Debug_Log(
+ 521                     ; 225                 "[EEPROM] ERROR: Invalid mode\r\n"
+ 521                     ; 226             );
+ 523  00ab ae037a        	ldw	x,#L732
+ 524  00ae cd0000        	call	_Debug_Log
+ 526                     ; 228             Debug_Log(
+ 526                     ; 229                 "[EEPROM] Using default Mode 1\r\n"
+ 526                     ; 230             );
+ 528  00b1 ae035a        	ldw	x,#L142
+ 529  00b4 cd0000        	call	_Debug_Log
+ 531                     ; 232             return 1;
+ 533  00b7 a601          	ld	a,#1
+ 535  00b9 202c          	jra	L22
+ 536  00bb               L332:
+ 537                     ; 240         expectedChecksum =
+ 537                     ; 241             EEPROM_CalculateChecksum(mode);
+ 539  00bb 7b03          	ld	a,(OFST+0,sp)
+ 540  00bd cd001c        	call	L53_EEPROM_CalculateChecksum
+ 542  00c0 6b02          	ld	(OFST-1,sp),a
+ 544                     ; 244         Debug_Log(
+ 544                     ; 245             "[EEPROM] Expected checksum: 0x"
+ 544                     ; 246         );
+ 546  00c2 ae033b        	ldw	x,#L342
+ 547  00c5 cd0000        	call	_Debug_Log
+ 549                     ; 248         Debug_LogHex(expectedChecksum);
+ 551  00c8 7b02          	ld	a,(OFST-1,sp)
+ 552  00ca cd0000        	call	_Debug_LogHex
+ 554                     ; 250         Debug_Log("\r\n");
+ 556  00cd ae03c6        	ldw	x,#L322
+ 557  00d0 cd0000        	call	_Debug_Log
+ 559                     ; 257         if(checksum != expectedChecksum)
+ 561  00d3 7b01          	ld	a,(OFST-2,sp)
+ 562  00d5 1102          	cp	a,(OFST-1,sp)
+ 563  00d7 2711          	jreq	L542
+ 564                     ; 259             Debug_Log(
+ 564                     ; 260                 "[EEPROM] ERROR: Checksum mismatch\r\n"
+ 564                     ; 261             );
+ 566  00d9 ae0317        	ldw	x,#L742
+ 567  00dc cd0000        	call	_Debug_Log
+ 569                     ; 263             Debug_Log(
+ 569                     ; 264                 "[EEPROM] Using default Mode 1\r\n"
+ 569                     ; 265             );
+ 571  00df ae035a        	ldw	x,#L142
+ 572  00e2 cd0000        	call	_Debug_Log
+ 574                     ; 267             return 1;
+ 576  00e5 a601          	ld	a,#1
+ 578  00e7               L22:
+ 580  00e7 5b03          	addw	sp,#3
+ 581  00e9 81            	ret
+ 582  00ea               L542:
+ 583                     ; 275         Debug_Log(
+ 583                     ; 276             "[EEPROM] Configuration VALID\r\n"
+ 583                     ; 277         );
+ 585  00ea ae02f8        	ldw	x,#L152
+ 586  00ed cd0000        	call	_Debug_Log
+ 588                     ; 279         Debug_Log(
+ 588                     ; 280             "[EEPROM] Restoring Mode: "
+ 588                     ; 281         );
+ 590  00f0 ae02de        	ldw	x,#L352
+ 591  00f3 cd0000        	call	_Debug_Log
+ 593                     ; 283         Debug_LogDecimal(mode);
+ 595  00f6 7b03          	ld	a,(OFST+0,sp)
+ 596  00f8 cd0000        	call	_Debug_LogDecimal
+ 598                     ; 285         Debug_Log("\r\n");
+ 600  00fb ae03c6        	ldw	x,#L322
+ 601  00fe cd0000        	call	_Debug_Log
+ 603                     ; 288         return mode;
+ 605  0101 7b03          	ld	a,(OFST+0,sp)
+ 607  0103 20e2          	jra	L22
+ 608  0105               L132:
+ 609                     ; 296     if(magic == EEPROM_LEGACY_MAGIC)
+ 611  0105 7b02          	ld	a,(OFST-1,sp)
+ 612  0107 a1a5          	cp	a,#165
+ 613  0109 265a          	jrne	L552
+ 614                     ; 311         Debug_Log(
+ 614                     ; 312             "[EEPROM] Legacy configuration detected\r\n"
+ 614                     ; 313         );
+ 616  010b ae02b5        	ldw	x,#L752
+ 617  010e cd0000        	call	_Debug_Log
+ 619                     ; 320         if(mode > 4)
+ 621  0111 7b03          	ld	a,(OFST+0,sp)
+ 622  0113 a105          	cp	a,#5
+ 623  0115 2510          	jrult	L162
+ 624                     ; 322             Debug_Log(
+ 624                     ; 323                 "[EEPROM] ERROR: Invalid legacy mode\r\n"
+ 624                     ; 324             );
+ 626  0117 ae028f        	ldw	x,#L362
+ 627  011a cd0000        	call	_Debug_Log
+ 629                     ; 326             Debug_Log(
+ 629                     ; 327                 "[EEPROM] Using default Mode 1\r\n"
+ 629                     ; 328             );
+ 631  011d ae035a        	ldw	x,#L142
+ 632  0120 cd0000        	call	_Debug_Log
+ 634                     ; 330             return 1;
+ 636  0123 a601          	ld	a,#1
+ 638  0125 20c0          	jra	L22
+ 639  0127               L162:
+ 640                     ; 338         legacyChecksum =
+ 640                     ; 339             EEPROM_CalculateLegacyChecksum(mode);
+ 642  0127 7b03          	ld	a,(OFST+0,sp)
+ 643  0129 cd0021        	call	L55_EEPROM_CalculateLegacyChecksum
+ 645  012c 6b02          	ld	(OFST-1,sp),a
+ 647                     ; 342         if(checksum != legacyChecksum)
+ 649  012e 7b01          	ld	a,(OFST-2,sp)
+ 650  0130 1102          	cp	a,(OFST-1,sp)
+ 651  0132 2710          	jreq	L562
+ 652                     ; 344             Debug_Log(
+ 652                     ; 345                 "[EEPROM] ERROR: Legacy checksum mismatch\r\n"
+ 652                     ; 346             );
+ 654  0134 ae0264        	ldw	x,#L762
+ 655  0137 cd0000        	call	_Debug_Log
+ 657                     ; 348             Debug_Log(
+ 657                     ; 349                 "[EEPROM] Using default Mode 1\r\n"
+ 657                     ; 350             );
+ 659  013a ae035a        	ldw	x,#L142
+ 660  013d cd0000        	call	_Debug_Log
+ 662                     ; 352             return 1;
+ 664  0140 a601          	ld	a,#1
+ 666  0142 20a3          	jra	L22
+ 667  0144               L562:
+ 668                     ; 366         mode = mode + 1;
+ 670  0144 0c03          	inc	(OFST+0,sp)
+ 672                     ; 369         Debug_Log(
+ 672                     ; 370             "[EEPROM] Legacy mode converted to Mode: "
+ 672                     ; 371         );
+ 674  0146 ae023b        	ldw	x,#L172
+ 675  0149 cd0000        	call	_Debug_Log
+ 677                     ; 373         Debug_LogDecimal(mode);
+ 679  014c 7b03          	ld	a,(OFST+0,sp)
+ 680  014e cd0000        	call	_Debug_LogDecimal
+ 682                     ; 375         Debug_Log("\r\n");
+ 684  0151 ae03c6        	ldw	x,#L322
+ 685  0154 cd0000        	call	_Debug_Log
+ 687                     ; 382         EEPROM_SaveMode(mode);
+ 689  0157 7b03          	ld	a,(OFST+0,sp)
+ 690  0159 ad1c          	call	_EEPROM_SaveMode
+ 692                     ; 385         Debug_Log(
+ 692                     ; 386             "[EEPROM] Legacy configuration migrated\r\n"
+ 692                     ; 387         );
+ 694  015b ae0212        	ldw	x,#L372
+ 695  015e cd0000        	call	_Debug_Log
+ 697                     ; 390         return mode;
+ 699  0161 7b03          	ld	a,(OFST+0,sp)
+ 701  0163 2082          	jra	L22
+ 702  0165               L552:
+ 703                     ; 398     Debug_Log(
+ 703                     ; 399         "[EEPROM] ERROR: Unknown configuration format\r\n"
+ 703                     ; 400     );
+ 705  0165 ae01e3        	ldw	x,#L572
+ 706  0168 cd0000        	call	_Debug_Log
+ 708                     ; 402     Debug_Log(
+ 708                     ; 403         "[EEPROM] Using default Mode 1\r\n"
+ 708                     ; 404     );
+ 710  016b ae035a        	ldw	x,#L142
+ 711  016e cd0000        	call	_Debug_Log
+ 713                     ; 407     return 1;
+ 715  0171 a601          	ld	a,#1
+ 717  0173 ace700e7      	jpf	L22
+ 794                     ; 415 void EEPROM_SaveMode(uint8_t mode)
+ 794                     ; 416 {
+ 795                     	switch	.text
+ 796  0177               _EEPROM_SaveMode:
+ 798  0177 88            	push	a
+ 799  0178 5204          	subw	sp,#4
+ 800       00000004      OFST:	set	4
+ 803                     ; 428     if(
+ 803                     ; 429         (mode < EEPROM_MIN_MODE) ||
+ 803                     ; 430         (mode > EEPROM_MAX_MODE)
+ 803                     ; 431     )
+ 805  017a 4d            	tnz	a
+ 806  017b 2704          	jreq	L733
+ 808  017d a106          	cp	a,#6
+ 809  017f 250a          	jrult	L533
+ 810  0181               L733:
+ 811                     ; 433         Debug_Log(
+ 811                     ; 434             "[EEPROM] ERROR: Attempted to save invalid mode\r\n"
+ 811                     ; 435         );
+ 813  0181 ae01b2        	ldw	x,#L143
+ 814  0184 cd0000        	call	_Debug_Log
+ 816                     ; 437         return;
+ 818  0187 ac810281      	jpf	L62
+ 819  018b               L533:
+ 820                     ; 441     Debug_Log("\r\n");
+ 822  018b ae03c6        	ldw	x,#L322
+ 823  018e cd0000        	call	_Debug_Log
+ 825                     ; 443     Debug_Log(
+ 825                     ; 444         "[EEPROM] =============================\r\n"
+ 825                     ; 445     );
+ 827  0191 ae0189        	ldw	x,#L343
+ 828  0194 cd0000        	call	_Debug_Log
+ 830                     ; 447     Debug_Log(
+ 830                     ; 448         "[EEPROM] Saving configuration\r\n"
+ 830                     ; 449     );
+ 832  0197 ae0169        	ldw	x,#L543
+ 833  019a cd0000        	call	_Debug_Log
+ 835                     ; 456     checksum =
+ 835                     ; 457         EEPROM_CalculateChecksum(mode);
+ 837  019d 7b05          	ld	a,(OFST+1,sp)
+ 838  019f cd001c        	call	L53_EEPROM_CalculateChecksum
+ 840  01a2 6b04          	ld	(OFST+0,sp),a
+ 842                     ; 460     Debug_Log("[EEPROM] Mode = ");
+ 844  01a4 ae0158        	ldw	x,#L743
+ 845  01a7 cd0000        	call	_Debug_Log
+ 847                     ; 461     Debug_LogDecimal(mode);
+ 849  01aa 7b05          	ld	a,(OFST+1,sp)
+ 850  01ac cd0000        	call	_Debug_LogDecimal
+ 852                     ; 463     Debug_Log("\r\n");
+ 854  01af ae03c6        	ldw	x,#L322
+ 855  01b2 cd0000        	call	_Debug_Log
+ 857                     ; 466     Debug_Log(
+ 857                     ; 467         "[EEPROM] Calculated checksum = 0x"
+ 857                     ; 468     );
+ 859  01b5 ae0136        	ldw	x,#L153
+ 860  01b8 cd0000        	call	_Debug_Log
+ 862                     ; 470     Debug_LogHex(checksum);
+ 864  01bb 7b04          	ld	a,(OFST+0,sp)
+ 865  01bd cd0000        	call	_Debug_LogHex
+ 867                     ; 472     Debug_Log("\r\n");
+ 869  01c0 ae03c6        	ldw	x,#L322
+ 870  01c3 cd0000        	call	_Debug_Log
+ 872                     ; 479     Debug_Log(
+ 872                     ; 480         "[EEPROM] Writing MODE...\r\n"
+ 872                     ; 481     );
+ 874  01c6 ae011b        	ldw	x,#L353
+ 875  01c9 cd0000        	call	_Debug_Log
+ 877                     ; 483     EEPROM_WriteByte(
+ 877                     ; 484         EEPROM_MODE_ADDRESS,
+ 877                     ; 485         mode
+ 877                     ; 486     );
+ 879  01cc 7b05          	ld	a,(OFST+1,sp)
+ 880  01ce 88            	push	a
+ 881  01cf ae4001        	ldw	x,#16385
+ 882  01d2 cd0030        	call	_EEPROM_WriteByte
+ 884  01d5 84            	pop	a
+ 885                     ; 492     Watchdog_Refresh();
+ 887  01d6 cd0000        	call	_Watchdog_Refresh
+ 889                     ; 499     Debug_Log(
+ 889                     ; 500         "[EEPROM] Writing CHECKSUM...\r\n"
+ 889                     ; 501     );
+ 891  01d9 ae00fc        	ldw	x,#L553
+ 892  01dc cd0000        	call	_Debug_Log
+ 894                     ; 503     EEPROM_WriteByte(
+ 894                     ; 504         EEPROM_CHECKSUM_ADDRESS,
+ 894                     ; 505         checksum
+ 894                     ; 506     );
+ 896  01df 7b04          	ld	a,(OFST+0,sp)
+ 897  01e1 88            	push	a
+ 898  01e2 ae4002        	ldw	x,#16386
+ 899  01e5 cd0030        	call	_EEPROM_WriteByte
+ 901  01e8 84            	pop	a
+ 902                     ; 508     Watchdog_Refresh();
+ 904  01e9 cd0000        	call	_Watchdog_Refresh
+ 906                     ; 515     Debug_Log(
+ 906                     ; 516         "[EEPROM] Writing MAGIC...\r\n"
+ 906                     ; 517     );
+ 908  01ec ae00e0        	ldw	x,#L753
+ 909  01ef cd0000        	call	_Debug_Log
+ 911                     ; 519     EEPROM_WriteByte(
+ 911                     ; 520         EEPROM_MAGIC_ADDRESS,
+ 911                     ; 521         EEPROM_MAGIC
+ 911                     ; 522     );
+ 913  01f2 4ba6          	push	#166
+ 914  01f4 ae4000        	ldw	x,#16384
+ 915  01f7 cd0030        	call	_EEPROM_WriteByte
+ 917  01fa 84            	pop	a
+ 918                     ; 524     Watchdog_Refresh();
+ 920  01fb cd0000        	call	_Watchdog_Refresh
+ 922                     ; 531     Debug_Log(
+ 922                     ; 532         "[EEPROM] Verifying EEPROM...\r\n"
+ 922                     ; 533     );
+ 924  01fe ae00c1        	ldw	x,#L163
+ 925  0201 cd0000        	call	_Debug_Log
+ 927                     ; 536     readBackMagic =
+ 927                     ; 537         EEPROM_ReadByte(
+ 927                     ; 538             EEPROM_MAGIC_ADDRESS
+ 927                     ; 539         );
+ 929  0204 ae4000        	ldw	x,#16384
+ 930  0207 cd0027        	call	_EEPROM_ReadByte
+ 932  020a 6b02          	ld	(OFST-2,sp),a
+ 934                     ; 541     readBackMode =
+ 934                     ; 542         EEPROM_ReadByte(
+ 934                     ; 543             EEPROM_MODE_ADDRESS
+ 934                     ; 544         );
+ 936  020c ae4001        	ldw	x,#16385
+ 937  020f cd0027        	call	_EEPROM_ReadByte
+ 939  0212 6b01          	ld	(OFST-3,sp),a
+ 941                     ; 546     readBackChecksum =
+ 941                     ; 547         EEPROM_ReadByte(
+ 941                     ; 548             EEPROM_CHECKSUM_ADDRESS
+ 941                     ; 549         );
+ 943  0214 ae4002        	ldw	x,#16386
+ 944  0217 cd0027        	call	_EEPROM_ReadByte
+ 946  021a 6b03          	ld	(OFST-1,sp),a
+ 948                     ; 556     Watchdog_Refresh();
+ 950  021c cd0000        	call	_Watchdog_Refresh
+ 952                     ; 559     Debug_Log(
+ 952                     ; 560         "[EEPROM] Read-back Magic: 0x"
+ 952                     ; 561     );
+ 954  021f ae00a4        	ldw	x,#L363
+ 955  0222 cd0000        	call	_Debug_Log
+ 957                     ; 563     Debug_LogHex(readBackMagic);
+ 959  0225 7b02          	ld	a,(OFST-2,sp)
+ 960  0227 cd0000        	call	_Debug_LogHex
+ 962                     ; 565     Debug_Log("\r\n");
+ 964  022a ae03c6        	ldw	x,#L322
+ 965  022d cd0000        	call	_Debug_Log
+ 967                     ; 568     Debug_Log(
+ 967                     ; 569         "[EEPROM] Read-back Mode: "
+ 967                     ; 570     );
+ 969  0230 ae008a        	ldw	x,#L563
+ 970  0233 cd0000        	call	_Debug_Log
+ 972                     ; 572     Debug_LogDecimal(readBackMode);
+ 974  0236 7b01          	ld	a,(OFST-3,sp)
+ 975  0238 cd0000        	call	_Debug_LogDecimal
+ 977                     ; 574     Debug_Log("\r\n");
+ 979  023b ae03c6        	ldw	x,#L322
+ 980  023e cd0000        	call	_Debug_Log
+ 982                     ; 577     Debug_Log(
+ 982                     ; 578         "[EEPROM] Read-back Checksum: 0x"
+ 982                     ; 579     );
+ 984  0241 ae006a        	ldw	x,#L763
+ 985  0244 cd0000        	call	_Debug_Log
+ 987                     ; 581     Debug_LogHex(readBackChecksum);
+ 989  0247 7b03          	ld	a,(OFST-1,sp)
+ 990  0249 cd0000        	call	_Debug_LogHex
+ 992                     ; 583     Debug_Log("\r\n");
+ 994  024c ae03c6        	ldw	x,#L322
+ 995  024f cd0000        	call	_Debug_Log
+ 997                     ; 590     if(
+ 997                     ; 591         (readBackMagic == EEPROM_MAGIC) &&
+ 997                     ; 592         (readBackMode == mode) &&
+ 997                     ; 593         (readBackChecksum == checksum)
+ 997                     ; 594     )
+ 999  0252 7b02          	ld	a,(OFST-2,sp)
+1000  0254 a1a6          	cp	a,#166
+1001  0256 261a          	jrne	L173
+1003  0258 7b01          	ld	a,(OFST-3,sp)
+1004  025a 1105          	cp	a,(OFST+1,sp)
+1005  025c 2614          	jrne	L173
+1007  025e 7b03          	ld	a,(OFST-1,sp)
+1008  0260 1104          	cp	a,(OFST+0,sp)
+1009  0262 260e          	jrne	L173
+1010                     ; 596         Debug_Log(
+1010                     ; 597             "[EEPROM] SAVE SUCCESS\r\n"
+1010                     ; 598         );
+1012  0264 ae0052        	ldw	x,#L373
+1013  0267 cd0000        	call	_Debug_Log
+1015                     ; 600         Debug_Log(
+1015                     ; 601             "[EEPROM] Configuration verified OK\r\n"
+1015                     ; 602         );
+1017  026a ae002d        	ldw	x,#L573
+1018  026d cd0000        	call	_Debug_Log
+1021  0270 2006          	jra	L773
+1022  0272               L173:
+1023                     ; 606         Debug_Log(
+1023                     ; 607             "[EEPROM] ERROR: EEPROM verification FAILED\r\n"
+1023                     ; 608         );
+1025  0272 ae0000        	ldw	x,#L104
+1026  0275 cd0000        	call	_Debug_Log
+1028  0278               L773:
+1029                     ; 612     Debug_Log(
+1029                     ; 613         "[EEPROM] =============================\r\n"
+1029                     ; 614     );
+1031  0278 ae0189        	ldw	x,#L343
+1032  027b cd0000        	call	_Debug_Log
+1034                     ; 621     Watchdog_Refresh();
+1036  027e cd0000        	call	_Watchdog_Refresh
+1038                     ; 622 }
+1039  0281               L62:
+1042  0281 5b05          	addw	sp,#5
+1043  0283 81            	ret
+1056                     	xref	_Watchdog_Refresh
+1057                     	xref	_Debug_LogDecimal
+1058                     	xref	_Debug_LogHex
+1059                     	xref	_Debug_Log
+1060                     	xdef	_EEPROM_SaveMode
+1061                     	xdef	_EEPROM_LoadMode
+1062                     	xdef	_EEPROM_WriteByte
+1063                     	xdef	_EEPROM_ReadByte
+1064                     	xdef	_EEPROM_Init
+1065                     .const:	section	.text
+1066  0000               L104:
+1067  0000 5b454550524f  	dc.b	"[EEPROM] ERROR: EE"
+1068  0012 50524f4d2076  	dc.b	"PROM verification "
+1069  0024 4641494c4544  	dc.b	"FAILED",13
+1070  002b 0a00          	dc.b	10,0
+1071  002d               L573:
+1072  002d 5b454550524f  	dc.b	"[EEPROM] Configura"
+1073  003f 74696f6e2076  	dc.b	"tion verified OK",13
+1074  0050 0a00          	dc.b	10,0
+1075  0052               L373:
+1076  0052 5b454550524f  	dc.b	"[EEPROM] SAVE SUCC"
+1077  0064 4553530d      	dc.b	"ESS",13
+1078  0068 0a00          	dc.b	10,0
+1079  006a               L763:
+1080  006a 5b454550524f  	dc.b	"[EEPROM] Read-back"
+1081  007c 20436865636b  	dc.b	" Checksum: 0x",0
+1082  008a               L563:
+1083  008a 5b454550524f  	dc.b	"[EEPROM] Read-back"
+1084  009c 204d6f64653a  	dc.b	" Mode: ",0
+1085  00a4               L363:
+1086  00a4 5b454550524f  	dc.b	"[EEPROM] Read-back"
+1087  00b6 204d61676963  	dc.b	" Magic: 0x",0
+1088  00c1               L163:
+1089  00c1 5b454550524f  	dc.b	"[EEPROM] Verifying"
+1090  00d3 20454550524f  	dc.b	" EEPROM...",13
+1091  00de 0a00          	dc.b	10,0
+1092  00e0               L753:
+1093  00e0 5b454550524f  	dc.b	"[EEPROM] Writing M"
+1094  00f2 414749432e2e  	dc.b	"AGIC...",13
+1095  00fa 0a00          	dc.b	10,0
+1096  00fc               L553:
+1097  00fc 5b454550524f  	dc.b	"[EEPROM] Writing C"
+1098  010e 4845434b5355  	dc.b	"HECKSUM...",13
+1099  0119 0a00          	dc.b	10,0
+1100  011b               L353:
+1101  011b 5b454550524f  	dc.b	"[EEPROM] Writing M"
+1102  012d 4f44452e2e2e  	dc.b	"ODE...",13
+1103  0134 0a00          	dc.b	10,0
+1104  0136               L153:
+1105  0136 5b454550524f  	dc.b	"[EEPROM] Calculate"
+1106  0148 642063686563  	dc.b	"d checksum = 0x",0
+1107  0158               L743:
+1108  0158 5b454550524f  	dc.b	"[EEPROM] Mode = ",0
+1109  0169               L543:
+1110  0169 5b454550524f  	dc.b	"[EEPROM] Saving co"
+1111  017b 6e6669677572  	dc.b	"nfiguration",13
+1112  0187 0a00          	dc.b	10,0
+1113  0189               L343:
+1114  0189 5b454550524f  	dc.b	"[EEPROM] ========="
+1115  019b 3d3d3d3d3d3d  	dc.b	"=================="
+1116  01ad 3d3d0d        	dc.b	"==",13
+1117  01b0 0a00          	dc.b	10,0
+1118  01b2               L143:
+1119  01b2 5b454550524f  	dc.b	"[EEPROM] ERROR: At"
+1120  01c4 74656d707465  	dc.b	"tempted to save in"
+1121  01d6 76616c696420  	dc.b	"valid mode",13
+1122  01e1 0a00          	dc.b	10,0
+1123  01e3               L572:
+1124  01e3 5b454550524f  	dc.b	"[EEPROM] ERROR: Un"
+1125  01f5 6b6e6f776e20  	dc.b	"known configuratio"
+1126  0207 6e20666f726d  	dc.b	"n format",13
+1127  0210 0a00          	dc.b	10,0
+1128  0212               L372:
+1129  0212 5b454550524f  	dc.b	"[EEPROM] Legacy co"
+1130  0224 6e6669677572  	dc.b	"nfiguration migrat"
+1131  0236 65640d        	dc.b	"ed",13
+1132  0239 0a00          	dc.b	10,0
+1133  023b               L172:
+1134  023b 5b454550524f  	dc.b	"[EEPROM] Legacy mo"
+1135  024d 646520636f6e  	dc.b	"de converted to Mo"
+1136  025f 64653a2000    	dc.b	"de: ",0
+1137  0264               L762:
+1138  0264 5b454550524f  	dc.b	"[EEPROM] ERROR: Le"
+1139  0276 676163792063  	dc.b	"gacy checksum mism"
+1140  0288 617463680d    	dc.b	"atch",13
+1141  028d 0a00          	dc.b	10,0
+1142  028f               L362:
+1143  028f 5b454550524f  	dc.b	"[EEPROM] ERROR: In"
+1144  02a1 76616c696420  	dc.b	"valid legacy mode",13
+1145  02b3 0a00          	dc.b	10,0
+1146  02b5               L752:
+1147  02b5 5b454550524f  	dc.b	"[EEPROM] Legacy co"
+1148  02c7 6e6669677572  	dc.b	"nfiguration detect"
+1149  02d9 65640d        	dc.b	"ed",13
+1150  02dc 0a00          	dc.b	10,0
+1151  02de               L352:
+1152  02de 5b454550524f  	dc.b	"[EEPROM] Restoring"
+1153  02f0 204d6f64653a  	dc.b	" Mode: ",0
+1154  02f8               L152:
+1155  02f8 5b454550524f  	dc.b	"[EEPROM] Configura"
+1156  030a 74696f6e2056  	dc.b	"tion VALID",13
+1157  0315 0a00          	dc.b	10,0
+1158  0317               L742:
+1159  0317 5b454550524f  	dc.b	"[EEPROM] ERROR: Ch"
+1160  0329 65636b73756d  	dc.b	"ecksum mismatch",13
+1161  0339 0a00          	dc.b	10,0
+1162  033b               L342:
+1163  033b 5b454550524f  	dc.b	"[EEPROM] Expected "
+1164  034d 636865636b73  	dc.b	"checksum: 0x",0
+1165  035a               L142:
+1166  035a 5b454550524f  	dc.b	"[EEPROM] Using def"
+1167  036c 61756c74204d  	dc.b	"ault Mode 1",13
+1168  0378 0a00          	dc.b	10,0
+1169  037a               L732:
+1170  037a 5b454550524f  	dc.b	"[EEPROM] ERROR: In"
+1171  038c 76616c696420  	dc.b	"valid mode",13
+1172  0397 0a00          	dc.b	10,0
+1173  0399               L722:
+1174  0399 5b454550524f  	dc.b	"[EEPROM] Checksum:"
+1175  03ab 20307800      	dc.b	" 0x",0
+1176  03af               L522:
+1177  03af 5b454550524f  	dc.b	"[EEPROM] Stored Mo"
+1178  03c1 64653a2000    	dc.b	"de: ",0
+1179  03c6               L322:
+1180  03c6 0d0a00        	dc.b	13,10,0
+1181  03c9               L122:
+1182  03c9 5b454550524f  	dc.b	"[EEPROM] Magic: 0x",0
+1183  03dc               L712:
+1184  03dc 5b454550524f  	dc.b	"[EEPROM] Loading c"
+1185  03ee 6f6e66696775  	dc.b	"onfiguration...",13
+1186  03fe 0a00          	dc.b	10,0
+1206                     	end
