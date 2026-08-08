@@ -3,9 +3,23 @@
 
 #include "common.h"
 
+/************************************************
+                SHIFT BUTTON
+************************************************/
+
 void Button_Init(void);
 void Button_Update(void);
 
 uint8_t Button_GetPress(void);
+
+
+/************************************************
+                MODE BUTTON
+************************************************/
+
+void ModeButton_Init(void);
+void ModeButton_Update(void);
+
+uint8_t ModeButton_GetPress(void);
 
 #endif

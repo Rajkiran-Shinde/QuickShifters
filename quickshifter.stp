@@ -289,6 +289,11 @@ String.6.0=2026,8,7,18,42,14
 [Root.Documentation.01_gpio.md]
 ElemType=File
 PathName=01_gpio.md
+Next=Root.Documentation.02_statemachine.md
+
+[Root.Documentation.02_statemachine.md]
+ElemType=File
+PathName=02_statemachine.md
 
 [Root.Include]
 ElemType=Folder
@@ -397,6 +402,11 @@ Next=Root.Include.relay.h
 [Root.Include.relay.h]
 ElemType=File
 PathName=relay.h
+Next=Root.Include.software_timer.h
+
+[Root.Include.software_timer.h]
+ElemType=File
+PathName=software_timer.h
 Next=Root.Include.stm8_hw.h
 
 [Root.Include.stm8_hw.h]
@@ -509,6 +519,11 @@ Next=Root.Source Files.relay.c
 [Root.Source Files.relay.c]
 ElemType=File
 PathName=relay.c
+Next=Root.Source Files.software_timer.c
+
+[Root.Source Files.software_timer.c]
+ElemType=File
+PathName=software_timer.c
 Next=Root.Source Files.stm8_interrupt_vector.c
 
 [Root.Source Files.stm8_interrupt_vector.c]

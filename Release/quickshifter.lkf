@@ -52,12 +52,15 @@ crtsi0.sm8
 #<BEGIN OBJECT_FILES>
 Release\button.o
 Release\clock.o
+Release\debug.o
 Release\gpio.o
 Release\main.o
+Release\mode.o
 Release\quickshifter.o
 Release\relay.o
 Release\software_timer.o
 Release\timer.o
+Release\uart.o
 #<END OBJECT_FILES>
 
 

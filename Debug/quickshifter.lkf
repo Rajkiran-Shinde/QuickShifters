@@ -52,12 +52,15 @@ crtsi0.sm8
 #<BEGIN OBJECT_FILES>
 Debug\button.o
 Debug\clock.o
+Debug\debug.o
 Debug\gpio.o
 Debug\main.o
+Debug\mode.o
 Debug\quickshifter.o
 Debug\relay.o
 Debug\software_timer.o
 Debug\timer.o
+Debug\uart.o
 #<END OBJECT_FILES>
 
 

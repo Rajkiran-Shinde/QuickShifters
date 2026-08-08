@@ -3,8 +3,9 @@
 #include "gpio.h"
 #include "timer.h"
 #include "config.h"
+#include "mode.h"
 
-#define SHIFT_TIME_MS   40
+
 
 //State Machine
 static QuickShifterState_t currentState;
@@ -34,7 +35,7 @@ void QuickShifter_Task(void)
             {
                 GPIO_Set(RELAY_PORT, RELAY_PIN);
 
-                SoftwareTimer_Start(&relayTimer, SHIFT_TIME_MS);
+                SoftwareTimer_Start(&relayTimer, Mode_GetCutTime());
 
                 currentState = QS_STATE_CUT_ACTIVE;
             }
