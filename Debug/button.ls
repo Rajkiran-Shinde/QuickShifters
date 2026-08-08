@@ -6,7 +6,7 @@
   47                     	switch	.text
   48  0000               _Button_Init:
   52                     ; 46     GPIO_Input_PU(BUTTON_PORT, BUTTON_PIN);
-  54  0000 ae0003        	ldw	x,#3
+  54  0000 ae0303        	ldw	x,#771
   55  0003 cd0000        	call	_GPIO_Input_PU
   57                     ; 48     currentState = BUTTON_STATE_RELEASED;
   59  0006 3f15          	clr	L3_currentState
@@ -41,7 +41,7 @@
  122                     ; 63         case BUTTON_STATE_RELEASED:
  122                     ; 64 
  122                     ; 65             if(GPIO_Read(BUTTON_PORT, BUTTON_PIN) == FALSE)
- 124  001d ae0003        	ldw	x,#3
+ 124  001d ae0303        	ldw	x,#771
  125  0020 cd0000        	call	_GPIO_Read
  127  0023 4d            	tnz	a
  128  0024 2671          	jrne	L35
@@ -67,7 +67,7 @@
  149  0042 4d            	tnz	a
  150  0043 2752          	jreq	L35
  151                     ; 81                 if(GPIO_Read(BUTTON_PORT, BUTTON_PIN) == FALSE)
- 153  0045 ae0003        	ldw	x,#3
+ 153  0045 ae0303        	ldw	x,#771
  154  0048 cd0000        	call	_GPIO_Read
  156  004b 4d            	tnz	a
  157  004c 260a          	jrne	L16
@@ -86,7 +86,7 @@
  172                     ; 98         case BUTTON_STATE_PRESSED:
  172                     ; 99 
  172                     ; 100             if(GPIO_Read(BUTTON_PORT, BUTTON_PIN) == TRUE)
- 174  005c ae0003        	ldw	x,#3
+ 174  005c ae0303        	ldw	x,#771
  175  005f cd0000        	call	_GPIO_Read
  177  0062 a101          	cp	a,#1
  178  0064 2631          	jrne	L35
@@ -112,7 +112,7 @@
  199  0082 4d            	tnz	a
  200  0083 2712          	jreq	L35
  201                     ; 116                 if(GPIO_Read(BUTTON_PORT, BUTTON_PIN) == TRUE)
- 203  0085 ae0003        	ldw	x,#3
+ 203  0085 ae0303        	ldw	x,#771
  204  0088 cd0000        	call	_GPIO_Read
  206  008b a101          	cp	a,#1
  207  008d 2604          	jrne	L17
@@ -165,7 +165,7 @@
  346  00b0               _ModeButton_Init:
  350                     ; 199     GPIO_Input_PU(MODE_BUTTON_PORT,
  350                     ; 200                   MODE_BUTTON_PIN);
- 352  00b0 ae0004        	ldw	x,#4
+ 352  00b0 ae0304        	ldw	x,#772
  353  00b3 cd0000        	call	_GPIO_Input_PU
  355                     ; 202     modeButtonState =
  355                     ; 203         MODE_BUTTON_STATE_RELEASED;
@@ -202,7 +202,7 @@
  420                     ; 219 
  420                     ; 220             if(GPIO_Read(MODE_BUTTON_PORT,
  420                     ; 221                          MODE_BUTTON_PIN) == FALSE)
- 422  00cd ae0004        	ldw	x,#4
+ 422  00cd ae0304        	ldw	x,#772
  423  00d0 cd0000        	call	_GPIO_Read
  425  00d3 4d            	tnz	a
  426  00d4 2671          	jrne	L361
@@ -231,7 +231,7 @@
  448  00f3 2752          	jreq	L361
  449                     ; 239                 if(GPIO_Read(MODE_BUTTON_PORT,
  449                     ; 240                              MODE_BUTTON_PIN) == FALSE)
- 451  00f5 ae0004        	ldw	x,#4
+ 451  00f5 ae0304        	ldw	x,#772
  452  00f8 cd0000        	call	_GPIO_Read
  454  00fb 4d            	tnz	a
  455  00fc 260a          	jrne	L171
@@ -251,7 +251,7 @@
  470                     ; 258 
  470                     ; 259             if(GPIO_Read(MODE_BUTTON_PORT,
  470                     ; 260                          MODE_BUTTON_PIN) == TRUE)
- 472  010c ae0004        	ldw	x,#4
+ 472  010c ae0304        	ldw	x,#772
  473  010f cd0000        	call	_GPIO_Read
  475  0112 a101          	cp	a,#1
  476  0114 2631          	jrne	L361
@@ -280,7 +280,7 @@
  498  0133 2712          	jreq	L361
  499                     ; 278                 if(GPIO_Read(MODE_BUTTON_PORT,
  499                     ; 279                              MODE_BUTTON_PIN) == TRUE)
- 501  0135 ae0004        	ldw	x,#4
+ 501  0135 ae0304        	ldw	x,#772
  502  0138 cd0000        	call	_GPIO_Read
  504  013b a101          	cp	a,#1
  505  013d 2604          	jrne	L102

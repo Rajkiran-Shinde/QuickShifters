@@ -55,6 +55,7 @@ Debug\clock.o
 Debug\debug.o
 Debug\eeprom.o
 Debug\gpio.o
+Debug\led.o
 Debug\main.o
 Debug\mode.o
 Debug\quickshifter.o

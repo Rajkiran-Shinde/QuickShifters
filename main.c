@@ -8,6 +8,7 @@
 #include "mode.h"
 #include "eeprom.h"
 #include "watchdog.h"
+#include "led.h"
 
 //Debug
 #include "debug.h"
@@ -26,9 +27,13 @@ ModeButton_Init();
 
 Debug_Init();
 
+LED_Init();
+
 EEPROM_Init();
 
 Mode_Init();
+
+LED_Mode_Display(Mode_Get() + 1);
 
 Debug_LogMode(
     Mode_Get(),
@@ -54,6 +59,8 @@ __asm ("rim\n");
         if(ModeButton_GetPress())
         {
             Mode_Next();
+						
+						LED_Mode_Display(Mode_Get() + 1);
 
             Debug_LogMode(
                 Mode_Get(),

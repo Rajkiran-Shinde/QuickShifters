@@ -6,10 +6,10 @@
   47                     	switch	.text
   48  0000               _Relay_Init:
   52                     ; 28     GPIO_Output_PP(RELAY_PORT, RELAY_PIN);
-  54  0000 ae0002        	ldw	x,#2
+  54  0000 ae0302        	ldw	x,#770
   55  0003 cd0000        	call	_GPIO_Output_PP
   57                     ; 35     GPIO_Clear(RELAY_PORT, RELAY_PIN);
-  59  0006 ae0002        	ldw	x,#2
+  59  0006 ae0302        	ldw	x,#770
   60  0009 cd0000        	call	_GPIO_Clear
   62                     ; 37     relayState = FALSE;
   64  000c 3f00          	clr	L3_relayState
@@ -20,7 +20,7 @@
   95                     	switch	.text
   96  000f               _Relay_On:
  100                     ; 47     GPIO_Set(RELAY_PORT, RELAY_PIN);
- 102  000f ae0002        	ldw	x,#2
+ 102  000f ae0302        	ldw	x,#770
  103  0012 cd0000        	call	_GPIO_Set
  105                     ; 49     relayState = TRUE;
  107  0015 35010000      	mov	L3_relayState,#1
@@ -34,7 +34,7 @@
  143                     	switch	.text
  144  0020               _Relay_Off:
  148                     ; 57     GPIO_Clear(RELAY_PORT, RELAY_PIN);
- 150  0020 ae0002        	ldw	x,#2
+ 150  0020 ae0302        	ldw	x,#770
  151  0023 cd0000        	call	_GPIO_Clear
  153                     ; 59     relayState = FALSE;
  155  0026 3f00          	clr	L3_relayState

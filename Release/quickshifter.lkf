@@ -55,6 +55,7 @@ Release\clock.o
 Release\debug.o
 Release\eeprom.o
 Release\gpio.o
+Release\led.o
 Release\main.o
 Release\mode.o
 Release\quickshifter.o
