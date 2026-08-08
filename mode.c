@@ -1,4 +1,5 @@
 #include "mode.h"
+#include "eeprom.h"
 
 #define MODE_COUNT 5
 
@@ -16,7 +17,13 @@ static const uint16_t cutTimes[MODE_COUNT] =
 
 void Mode_Init(void)
 {
-    currentMode = QS_MODE_1;
+    /*
+     * Load previously saved mode from EEPROM.
+     *
+     * EEPROM_LoadMode() returns Mode 1
+     * automatically if EEPROM data is invalid.
+     */
+    currentMode = (QuickShifterMode_t)EEPROM_LoadMode();
 }
 
 
@@ -28,6 +35,11 @@ void Mode_Next(void)
     {
         currentMode = QS_MODE_1;
     }
+
+    /*
+     * Save the newly selected mode.
+     */
+    EEPROM_SaveMode((uint8_t)currentMode);
 }
 
 

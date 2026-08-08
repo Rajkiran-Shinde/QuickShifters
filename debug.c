@@ -30,6 +30,41 @@ void Debug_Log(const char *message)
     UART_SendString(message);
 }
 
+void Debug_LogHex(uint8_t value)
+{
+    char hex[] = "0123456789ABCDEF";
+
+    UART_SendChar(hex[(value >> 4) & 0x0F]);
+    UART_SendChar(hex[value & 0x0F]);
+}
+
+void Debug_LogDecimal(uint8_t value)
+{
+    char buffer[4];
+    uint8_t i = 0;
+
+    if(value >= 100)
+    {
+        buffer[i++] = '0' + (value / 100);
+        value = value % 100;
+
+        buffer[i++] = '0' + (value / 10);
+        buffer[i++] = '0' + (value % 10);
+    }
+    else if(value >= 10)
+    {
+        buffer[i++] = '0' + (value / 10);
+        buffer[i++] = '0' + (value % 10);
+    }
+    else
+    {
+        buffer[i++] = '0' + value;
+    }
+
+    buffer[i] = '\0';
+
+    Debug_Log(buffer);
+}
 
 /************************************************
                 DEBUG STATE

@@ -11,6 +11,10 @@ void Debug_Init(void);
 
 void Debug_Log(const char *message);
 
+void Debug_LogHex(uint8_t value);
+
+void Debug_LogDecimal(uint8_t value);
+
 void Debug_LogState(uint8_t state);
 
 void Debug_LogShift(uint16_t shift_time);
