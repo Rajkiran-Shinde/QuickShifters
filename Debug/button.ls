@@ -144,180 +144,196 @@
  266                     ; 155     return FALSE;
  268  00a3 4f            	clr	a
  271  00a4 81            	ret
- 297                     ; 188 void ModeButton_Init(void)
- 297                     ; 189 {
- 298                     	switch	.text
- 299  00a5               _ModeButton_Init:
- 303                     ; 190     GPIO_Input_PU(MODE_BUTTON_PORT,
- 303                     ; 191                   MODE_BUTTON_PIN);
- 305  00a5 ae0004        	ldw	x,#4
- 306  00a8 cd0000        	call	_GPIO_Input_PU
- 308                     ; 193     modeButtonState =
- 308                     ; 194         MODE_BUTTON_STATE_RELEASED;
- 310  00ab 3f0a          	clr	L701_modeButtonState
- 311                     ; 196     modeButtonPressEvent = FALSE;
- 313  00ad 3f00          	clr	L311_modeButtonPressEvent
- 314                     ; 197 }
- 317  00af 81            	ret
- 346                     ; 205 void ModeButton_Update(void)
- 346                     ; 206 {
- 347                     	switch	.text
- 348  00b0               _ModeButton_Update:
- 352                     ; 207     switch(modeButtonState)
- 354  00b0 b60a          	ld	a,L701_modeButtonState
- 356                     ; 290             break;
- 357  00b2 4d            	tnz	a
- 358  00b3 270d          	jreq	L521
- 359  00b5 4a            	dec	a
- 360  00b6 2729          	jreq	L721
- 361  00b8 4a            	dec	a
- 362  00b9 2746          	jreq	L131
- 363  00bb 4a            	dec	a
- 364  00bc 2763          	jreq	L331
- 365  00be               L531:
- 366                     ; 285         default:
- 366                     ; 286 
- 366                     ; 287             modeButtonState =
- 366                     ; 288                 MODE_BUTTON_STATE_RELEASED;
- 368  00be 3f0a          	clr	L701_modeButtonState
- 369                     ; 290             break;
- 371  00c0 207a          	jra	L151
- 372  00c2               L521:
- 373                     ; 209         case MODE_BUTTON_STATE_RELEASED:
- 373                     ; 210 
- 373                     ; 211             if(GPIO_Read(MODE_BUTTON_PORT,
- 373                     ; 212                          MODE_BUTTON_PIN) == FALSE)
- 375  00c2 ae0004        	ldw	x,#4
- 376  00c5 cd0000        	call	_GPIO_Read
- 378  00c8 4d            	tnz	a
- 379  00c9 2671          	jrne	L151
- 380                     ; 214                 SoftwareTimer_Start(
- 380                     ; 215                     &modeButtonDebounceTimer,
- 380                     ; 216                     BUTTON_DEBOUNCE_TIME);
- 382  00cb ae0014        	ldw	x,#20
- 383  00ce 89            	pushw	x
- 384  00cf ae0000        	ldw	x,#0
- 385  00d2 89            	pushw	x
- 386  00d3 ae0001        	ldw	x,#L111_modeButtonDebounceTimer
- 387  00d6 cd0000        	call	_SoftwareTimer_Start
- 389  00d9 5b04          	addw	sp,#4
- 390                     ; 218                 modeButtonState =
- 390                     ; 219                     MODE_BUTTON_STATE_DEBOUNCE_PRESS;
- 392  00db 3501000a      	mov	L701_modeButtonState,#1
- 393  00df 205b          	jra	L151
- 394  00e1               L721:
- 395                     ; 225         case MODE_BUTTON_STATE_DEBOUNCE_PRESS:
- 395                     ; 226 
- 395                     ; 227             if(SoftwareTimer_Expired(
- 395                     ; 228                     &modeButtonDebounceTimer))
- 397  00e1 ae0001        	ldw	x,#L111_modeButtonDebounceTimer
- 398  00e4 cd0000        	call	_SoftwareTimer_Expired
- 400  00e7 4d            	tnz	a
- 401  00e8 2752          	jreq	L151
- 402                     ; 230                 if(GPIO_Read(MODE_BUTTON_PORT,
- 402                     ; 231                              MODE_BUTTON_PIN) == FALSE)
- 404  00ea ae0004        	ldw	x,#4
- 405  00ed cd0000        	call	_GPIO_Read
- 407  00f0 4d            	tnz	a
- 408  00f1 260a          	jrne	L751
- 409                     ; 233                     modeButtonPressEvent = TRUE;
- 411  00f3 35010000      	mov	L311_modeButtonPressEvent,#1
- 412                     ; 235                     modeButtonState =
- 412                     ; 236                         MODE_BUTTON_STATE_PRESSED;
- 414  00f7 3502000a      	mov	L701_modeButtonState,#2
- 416  00fb 203f          	jra	L151
- 417  00fd               L751:
- 418                     ; 240                     modeButtonState =
- 418                     ; 241                         MODE_BUTTON_STATE_RELEASED;
- 420  00fd 3f0a          	clr	L701_modeButtonState
- 421  00ff 203b          	jra	L151
- 422  0101               L131:
- 423                     ; 248         case MODE_BUTTON_STATE_PRESSED:
- 423                     ; 249 
- 423                     ; 250             if(GPIO_Read(MODE_BUTTON_PORT,
- 423                     ; 251                          MODE_BUTTON_PIN) == TRUE)
- 425  0101 ae0004        	ldw	x,#4
- 426  0104 cd0000        	call	_GPIO_Read
- 428  0107 a101          	cp	a,#1
- 429  0109 2631          	jrne	L151
- 430                     ; 253                 SoftwareTimer_Start(
- 430                     ; 254                     &modeButtonDebounceTimer,
- 430                     ; 255                     BUTTON_DEBOUNCE_TIME);
- 432  010b ae0014        	ldw	x,#20
- 433  010e 89            	pushw	x
- 434  010f ae0000        	ldw	x,#0
- 435  0112 89            	pushw	x
- 436  0113 ae0001        	ldw	x,#L111_modeButtonDebounceTimer
- 437  0116 cd0000        	call	_SoftwareTimer_Start
- 439  0119 5b04          	addw	sp,#4
- 440                     ; 257                 modeButtonState =
- 440                     ; 258                     MODE_BUTTON_STATE_DEBOUNCE_RELEASE;
- 442  011b 3503000a      	mov	L701_modeButtonState,#3
- 443  011f 201b          	jra	L151
- 444  0121               L331:
- 445                     ; 264         case MODE_BUTTON_STATE_DEBOUNCE_RELEASE:
- 445                     ; 265 
- 445                     ; 266             if(SoftwareTimer_Expired(
- 445                     ; 267                     &modeButtonDebounceTimer))
- 447  0121 ae0001        	ldw	x,#L111_modeButtonDebounceTimer
- 448  0124 cd0000        	call	_SoftwareTimer_Expired
- 450  0127 4d            	tnz	a
- 451  0128 2712          	jreq	L151
- 452                     ; 269                 if(GPIO_Read(MODE_BUTTON_PORT,
- 452                     ; 270                              MODE_BUTTON_PIN) == TRUE)
- 454  012a ae0004        	ldw	x,#4
- 455  012d cd0000        	call	_GPIO_Read
- 457  0130 a101          	cp	a,#1
- 458  0132 2604          	jrne	L761
- 459                     ; 272                     modeButtonState =
- 459                     ; 273                         MODE_BUTTON_STATE_RELEASED;
- 461  0134 3f0a          	clr	L701_modeButtonState
- 463  0136 2004          	jra	L151
- 464  0138               L761:
- 465                     ; 277                     modeButtonState =
- 465                     ; 278                         MODE_BUTTON_STATE_PRESSED;
- 467  0138 3502000a      	mov	L701_modeButtonState,#2
- 468  013c               L151:
- 469                     ; 292 }
- 472  013c 81            	ret
- 497                     ; 300 uint8_t ModeButton_GetPress(void)
- 497                     ; 301 {
- 498                     	switch	.text
- 499  013d               _ModeButton_GetPress:
- 503                     ; 302     if(modeButtonPressEvent == TRUE)
- 505  013d b600          	ld	a,L311_modeButtonPressEvent
- 506  013f a101          	cp	a,#1
- 507  0141 2605          	jrne	L302
- 508                     ; 304         modeButtonPressEvent = FALSE;
- 510  0143 3f00          	clr	L311_modeButtonPressEvent
- 511                     ; 306         return TRUE;
- 513  0145 a601          	ld	a,#1
- 516  0147 81            	ret
- 517  0148               L302:
- 518                     ; 309     return FALSE;
- 520  0148 4f            	clr	a
- 523  0149 81            	ret
- 702                     	switch	.ubsct
- 703  0000               L311_modeButtonPressEvent:
- 704  0000 00            	ds.b	1
- 705  0001               L111_modeButtonDebounceTimer:
- 706  0001 000000000000  	ds.b	9
- 707  000a               L701_modeButtonState:
- 708  000a 00            	ds.b	1
- 709  000b               L7_pressEvent:
- 710  000b 00            	ds.b	1
- 711  000c               L5_debounceTimer:
- 712  000c 000000000000  	ds.b	9
- 713  0015               L3_currentState:
- 714  0015 00            	ds.b	1
- 715                     	xref	_SoftwareTimer_Expired
- 716                     	xref	_SoftwareTimer_Start
- 717                     	xref	_GPIO_Read
- 718                     	xref	_GPIO_Input_PU
- 719                     	xdef	_ModeButton_GetPress
- 720                     	xdef	_ModeButton_Update
- 721                     	xdef	_ModeButton_Init
- 722                     	xdef	_Button_GetPress
- 723                     	xdef	_Button_Update
- 724                     	xdef	_Button_Init
- 744                     	end
+ 295                     ; 158 uint8_t Button_IsPressed(void)
+ 295                     ; 159 {
+ 296                     	switch	.text
+ 297  00a5               _Button_IsPressed:
+ 301                     ; 160     if(currentState == BUTTON_STATE_PRESSED)
+ 303  00a5 b615          	ld	a,L3_currentState
+ 304  00a7 a102          	cp	a,#2
+ 305  00a9 2603          	jrne	L711
+ 306                     ; 162         return TRUE;
+ 308  00ab a601          	ld	a,#1
+ 311  00ad 81            	ret
+ 312  00ae               L711:
+ 313                     ; 165     return FALSE;
+ 315  00ae 4f            	clr	a
+ 318  00af 81            	ret
+ 344                     ; 197 void ModeButton_Init(void)
+ 344                     ; 198 {
+ 345                     	switch	.text
+ 346  00b0               _ModeButton_Init:
+ 350                     ; 199     GPIO_Input_PU(MODE_BUTTON_PORT,
+ 350                     ; 200                   MODE_BUTTON_PIN);
+ 352  00b0 ae0004        	ldw	x,#4
+ 353  00b3 cd0000        	call	_GPIO_Input_PU
+ 355                     ; 202     modeButtonState =
+ 355                     ; 203         MODE_BUTTON_STATE_RELEASED;
+ 357  00b6 3f0a          	clr	L121_modeButtonState
+ 358                     ; 205     modeButtonPressEvent = FALSE;
+ 360  00b8 3f00          	clr	L521_modeButtonPressEvent
+ 361                     ; 206 }
+ 364  00ba 81            	ret
+ 393                     ; 214 void ModeButton_Update(void)
+ 393                     ; 215 {
+ 394                     	switch	.text
+ 395  00bb               _ModeButton_Update:
+ 399                     ; 216     switch(modeButtonState)
+ 401  00bb b60a          	ld	a,L121_modeButtonState
+ 403                     ; 299             break;
+ 404  00bd 4d            	tnz	a
+ 405  00be 270d          	jreq	L731
+ 406  00c0 4a            	dec	a
+ 407  00c1 2729          	jreq	L141
+ 408  00c3 4a            	dec	a
+ 409  00c4 2746          	jreq	L341
+ 410  00c6 4a            	dec	a
+ 411  00c7 2763          	jreq	L541
+ 412  00c9               L741:
+ 413                     ; 294         default:
+ 413                     ; 295 
+ 413                     ; 296             modeButtonState =
+ 413                     ; 297                 MODE_BUTTON_STATE_RELEASED;
+ 415  00c9 3f0a          	clr	L121_modeButtonState
+ 416                     ; 299             break;
+ 418  00cb 207a          	jra	L361
+ 419  00cd               L731:
+ 420                     ; 218         case MODE_BUTTON_STATE_RELEASED:
+ 420                     ; 219 
+ 420                     ; 220             if(GPIO_Read(MODE_BUTTON_PORT,
+ 420                     ; 221                          MODE_BUTTON_PIN) == FALSE)
+ 422  00cd ae0004        	ldw	x,#4
+ 423  00d0 cd0000        	call	_GPIO_Read
+ 425  00d3 4d            	tnz	a
+ 426  00d4 2671          	jrne	L361
+ 427                     ; 223                 SoftwareTimer_Start(
+ 427                     ; 224                     &modeButtonDebounceTimer,
+ 427                     ; 225                     BUTTON_DEBOUNCE_TIME);
+ 429  00d6 ae0014        	ldw	x,#20
+ 430  00d9 89            	pushw	x
+ 431  00da ae0000        	ldw	x,#0
+ 432  00dd 89            	pushw	x
+ 433  00de ae0001        	ldw	x,#L321_modeButtonDebounceTimer
+ 434  00e1 cd0000        	call	_SoftwareTimer_Start
+ 436  00e4 5b04          	addw	sp,#4
+ 437                     ; 227                 modeButtonState =
+ 437                     ; 228                     MODE_BUTTON_STATE_DEBOUNCE_PRESS;
+ 439  00e6 3501000a      	mov	L121_modeButtonState,#1
+ 440  00ea 205b          	jra	L361
+ 441  00ec               L141:
+ 442                     ; 234         case MODE_BUTTON_STATE_DEBOUNCE_PRESS:
+ 442                     ; 235 
+ 442                     ; 236             if(SoftwareTimer_Expired(
+ 442                     ; 237                     &modeButtonDebounceTimer))
+ 444  00ec ae0001        	ldw	x,#L321_modeButtonDebounceTimer
+ 445  00ef cd0000        	call	_SoftwareTimer_Expired
+ 447  00f2 4d            	tnz	a
+ 448  00f3 2752          	jreq	L361
+ 449                     ; 239                 if(GPIO_Read(MODE_BUTTON_PORT,
+ 449                     ; 240                              MODE_BUTTON_PIN) == FALSE)
+ 451  00f5 ae0004        	ldw	x,#4
+ 452  00f8 cd0000        	call	_GPIO_Read
+ 454  00fb 4d            	tnz	a
+ 455  00fc 260a          	jrne	L171
+ 456                     ; 242                     modeButtonPressEvent = TRUE;
+ 458  00fe 35010000      	mov	L521_modeButtonPressEvent,#1
+ 459                     ; 244                     modeButtonState =
+ 459                     ; 245                         MODE_BUTTON_STATE_PRESSED;
+ 461  0102 3502000a      	mov	L121_modeButtonState,#2
+ 463  0106 203f          	jra	L361
+ 464  0108               L171:
+ 465                     ; 249                     modeButtonState =
+ 465                     ; 250                         MODE_BUTTON_STATE_RELEASED;
+ 467  0108 3f0a          	clr	L121_modeButtonState
+ 468  010a 203b          	jra	L361
+ 469  010c               L341:
+ 470                     ; 257         case MODE_BUTTON_STATE_PRESSED:
+ 470                     ; 258 
+ 470                     ; 259             if(GPIO_Read(MODE_BUTTON_PORT,
+ 470                     ; 260                          MODE_BUTTON_PIN) == TRUE)
+ 472  010c ae0004        	ldw	x,#4
+ 473  010f cd0000        	call	_GPIO_Read
+ 475  0112 a101          	cp	a,#1
+ 476  0114 2631          	jrne	L361
+ 477                     ; 262                 SoftwareTimer_Start(
+ 477                     ; 263                     &modeButtonDebounceTimer,
+ 477                     ; 264                     BUTTON_DEBOUNCE_TIME);
+ 479  0116 ae0014        	ldw	x,#20
+ 480  0119 89            	pushw	x
+ 481  011a ae0000        	ldw	x,#0
+ 482  011d 89            	pushw	x
+ 483  011e ae0001        	ldw	x,#L321_modeButtonDebounceTimer
+ 484  0121 cd0000        	call	_SoftwareTimer_Start
+ 486  0124 5b04          	addw	sp,#4
+ 487                     ; 266                 modeButtonState =
+ 487                     ; 267                     MODE_BUTTON_STATE_DEBOUNCE_RELEASE;
+ 489  0126 3503000a      	mov	L121_modeButtonState,#3
+ 490  012a 201b          	jra	L361
+ 491  012c               L541:
+ 492                     ; 273         case MODE_BUTTON_STATE_DEBOUNCE_RELEASE:
+ 492                     ; 274 
+ 492                     ; 275             if(SoftwareTimer_Expired(
+ 492                     ; 276                     &modeButtonDebounceTimer))
+ 494  012c ae0001        	ldw	x,#L321_modeButtonDebounceTimer
+ 495  012f cd0000        	call	_SoftwareTimer_Expired
+ 497  0132 4d            	tnz	a
+ 498  0133 2712          	jreq	L361
+ 499                     ; 278                 if(GPIO_Read(MODE_BUTTON_PORT,
+ 499                     ; 279                              MODE_BUTTON_PIN) == TRUE)
+ 501  0135 ae0004        	ldw	x,#4
+ 502  0138 cd0000        	call	_GPIO_Read
+ 504  013b a101          	cp	a,#1
+ 505  013d 2604          	jrne	L102
+ 506                     ; 281                     modeButtonState =
+ 506                     ; 282                         MODE_BUTTON_STATE_RELEASED;
+ 508  013f 3f0a          	clr	L121_modeButtonState
+ 510  0141 2004          	jra	L361
+ 511  0143               L102:
+ 512                     ; 286                     modeButtonState =
+ 512                     ; 287                         MODE_BUTTON_STATE_PRESSED;
+ 514  0143 3502000a      	mov	L121_modeButtonState,#2
+ 515  0147               L361:
+ 516                     ; 301 }
+ 519  0147 81            	ret
+ 544                     ; 309 uint8_t ModeButton_GetPress(void)
+ 544                     ; 310 {
+ 545                     	switch	.text
+ 546  0148               _ModeButton_GetPress:
+ 550                     ; 311     if(modeButtonPressEvent == TRUE)
+ 552  0148 b600          	ld	a,L521_modeButtonPressEvent
+ 553  014a a101          	cp	a,#1
+ 554  014c 2605          	jrne	L512
+ 555                     ; 313         modeButtonPressEvent = FALSE;
+ 557  014e 3f00          	clr	L521_modeButtonPressEvent
+ 558                     ; 315         return TRUE;
+ 560  0150 a601          	ld	a,#1
+ 563  0152 81            	ret
+ 564  0153               L512:
+ 565                     ; 318     return FALSE;
+ 567  0153 4f            	clr	a
+ 570  0154 81            	ret
+ 749                     	switch	.ubsct
+ 750  0000               L521_modeButtonPressEvent:
+ 751  0000 00            	ds.b	1
+ 752  0001               L321_modeButtonDebounceTimer:
+ 753  0001 000000000000  	ds.b	9
+ 754  000a               L121_modeButtonState:
+ 755  000a 00            	ds.b	1
+ 756  000b               L7_pressEvent:
+ 757  000b 00            	ds.b	1
+ 758  000c               L5_debounceTimer:
+ 759  000c 000000000000  	ds.b	9
+ 760  0015               L3_currentState:
+ 761  0015 00            	ds.b	1
+ 762                     	xref	_SoftwareTimer_Expired
+ 763                     	xref	_SoftwareTimer_Start
+ 764                     	xref	_GPIO_Read
+ 765                     	xref	_GPIO_Input_PU
+ 766                     	xdef	_ModeButton_GetPress
+ 767                     	xdef	_ModeButton_Update
+ 768                     	xdef	_ModeButton_Init
+ 769                     	xdef	_Button_IsPressed
+ 770                     	xdef	_Button_GetPress
+ 771                     	xdef	_Button_Update
+ 772                     	xdef	_Button_Init
+ 792                     	end

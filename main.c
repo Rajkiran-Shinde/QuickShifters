@@ -11,25 +11,32 @@
 //Debug
 #include "debug.h"
 
+//static uint32_t lastDebugTick = 0; //The one Second Test 
+
 int main(void)
 {
     CLK_Init();
 
-    Timer_Init();
+Timer_Init();
 
-    Button_Init();
+Button_Init();
 
-    ModeButton_Init();
+ModeButton_Init();
 
-    Debug_Init();
+Debug_Init();
 
-    EEPROM_Init();
+EEPROM_Init();
 
-    Mode_Init();
+Mode_Init();
 
-    QuickShifter_Init();
+Debug_LogMode(
+    Mode_Get(),
+    Mode_GetCutTime()
+);
 
-    __asm ("rim\n");
+QuickShifter_Init();
+
+__asm ("rim\n");
 
     while(1)
     {
@@ -48,5 +55,13 @@ int main(void)
                 Mode_GetCutTime()
             );
         }
+				/*
+				if((Timer_GetTick() - lastDebugTick) >= 1000)
+				{
+				lastDebugTick = Timer_GetTick();
+
+				Debug_Log("[TIMER] 1 second elapsed\r\n");
+				}*/		//One second test 
     }
+		
 }

@@ -78,7 +78,15 @@ void Timer_TickISR(void)
 
 uint32_t Timer_GetTick(void)
 {
-    return system_tick;
+    uint32_t tick;
+
+    __asm("sim");
+
+    tick = system_tick;
+
+    __asm("rim");
+
+    return tick;
 }
 
 /*=============================

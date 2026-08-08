@@ -11,6 +11,7 @@ void Button_Init(void);
 void Button_Update(void);
 
 uint8_t Button_GetPress(void);
+uint8_t Button_IsPressed(void);
 
 
 /************************************************

@@ -155,6 +155,15 @@ uint8_t Button_GetPress(void)
     return FALSE;
 }
 
+uint8_t Button_IsPressed(void)
+{
+    if(currentState == BUTTON_STATE_PRESSED)
+    {
+        return TRUE;
+    }
+
+    return FALSE;
+}
 
 /************************************************
                 MODE BUTTON
