@@ -6,8 +6,8 @@
   91                     	switch	.text
   92  0000               L3_GPIO_Get_ODR:
   96                     ; 44     switch(port)
-  99                     ; 58         default:
-  99                     ; 59             return &PD_ODR;
+  99                     ; 58     default:
+  99                     ; 59         return &PD_ODR;
  100  0000 4d            	tnz	a
  101  0001 270d          	jreq	L5
  102  0003 4a            	dec	a
@@ -20,32 +20,32 @@
  111  000c ae500f        	ldw	x,#20495
  114  000f 81            	ret
  115  0010               L5:
- 116                     ; 46         case PORT_A:
- 116                     ; 47             return &PA_ODR;
+ 116                     ; 46     case PORT_A:
+ 116                     ; 47         return &PA_ODR;
  118  0010 ae5000        	ldw	x,#20480
  121  0013 81            	ret
  122  0014               L7:
- 123                     ; 49         case PORT_B:
- 123                     ; 50             return &PB_ODR;
+ 123                     ; 49     case PORT_B:
+ 123                     ; 50         return &PB_ODR;
  125  0014 ae5005        	ldw	x,#20485
  128  0017 81            	ret
  129  0018               L11:
- 130                     ; 52         case PORT_C:
- 130                     ; 53             return &PC_ODR;
+ 130                     ; 52     case PORT_C:
+ 130                     ; 53         return &PC_ODR;
  132  0018 ae500a        	ldw	x,#20490
  135  001b 81            	ret
  136  001c               L31:
- 137                     ; 55         case PORT_D:
- 137                     ; 56             return &PD_ODR;
+ 137                     ; 55     case PORT_D:
+ 137                     ; 56         return &PD_ODR;
  139  001c ae500f        	ldw	x,#20495
  142  001f 81            	ret
  178                     ; 64 static volatile uint8_t* GPIO_Get_IDR(GPIO_Port port)
  178                     ; 65 {
  179                     	switch	.text
  180  0020               L36_GPIO_Get_IDR:
- 184                     ; 66     switch(port)
- 187                     ; 80         default:
- 187                     ; 81             return &PD_IDR;
+ 184                     ; 66 	switch(port)
+ 187                     ; 80     default:
+ 187                     ; 81         return &PD_IDR;
  188  0020 4d            	tnz	a
  189  0021 270d          	jreq	L56
  190  0023 4a            	dec	a
@@ -58,32 +58,32 @@
  199  002c ae5010        	ldw	x,#20496
  202  002f 81            	ret
  203  0030               L56:
- 204                     ; 68         case PORT_A:
- 204                     ; 69             return &PA_IDR;
+ 204                     ; 68     case PORT_A:
+ 204                     ; 69         return &PA_IDR;
  206  0030 ae5001        	ldw	x,#20481
  209  0033 81            	ret
  210  0034               L76:
- 211                     ; 71         case PORT_B:
- 211                     ; 72             return &PB_IDR;
+ 211                     ; 71     case PORT_B:
+ 211                     ; 72         return &PB_IDR;
  213  0034 ae5006        	ldw	x,#20486
  216  0037 81            	ret
  217  0038               L17:
- 218                     ; 74         case PORT_C:
- 218                     ; 75             return &PC_IDR;
+ 218                     ; 74     case PORT_C:
+ 218                     ; 75         return &PC_IDR;
  220  0038 ae500b        	ldw	x,#20491
  223  003b 81            	ret
  224  003c               L37:
- 225                     ; 77         case PORT_D:
- 225                     ; 78             return &PD_IDR;
+ 225                     ; 77     case PORT_D:
+ 225                     ; 78         return &PD_IDR;
  227  003c ae5010        	ldw	x,#20496
  230  003f 81            	ret
  266                     ; 86 static volatile uint8_t* GPIO_Get_DDR(GPIO_Port port)
  266                     ; 87 {
  267                     	switch	.text
  268  0040               L121_GPIO_Get_DDR:
- 272                     ; 88     switch(port)
- 275                     ; 102         default:
- 275                     ; 103             return &PD_DDR;
+ 272                     ; 88 	switch(port)
+ 275                     ; 102     default:
+ 275                     ; 103         return &PD_DDR;
  276  0040 4d            	tnz	a
  277  0041 270d          	jreq	L321
  278  0043 4a            	dec	a
@@ -96,23 +96,23 @@
  287  004c ae5011        	ldw	x,#20497
  290  004f 81            	ret
  291  0050               L321:
- 292                     ; 90         case PORT_A:
- 292                     ; 91             return &PA_DDR;
+ 292                     ; 90     case PORT_A:
+ 292                     ; 91         return &PA_DDR;
  294  0050 ae5002        	ldw	x,#20482
  297  0053 81            	ret
  298  0054               L521:
- 299                     ; 93         case PORT_B:
- 299                     ; 94             return &PB_DDR;
+ 299                     ; 93     case PORT_B:
+ 299                     ; 94         return &PB_DDR;
  301  0054 ae5007        	ldw	x,#20487
  304  0057 81            	ret
  305  0058               L721:
- 306                     ; 96         case PORT_C:
- 306                     ; 97             return &PC_DDR;
+ 306                     ; 96     case PORT_C:
+ 306                     ; 97         return &PC_DDR;
  308  0058 ae500c        	ldw	x,#20492
  311  005b 81            	ret
  312  005c               L131:
- 313                     ; 99         case PORT_D:
- 313                     ; 100             return &PD_DDR;
+ 313                     ; 99     case PORT_D:
+ 313                     ; 100         return &PD_DDR;
  315  005c ae5011        	ldw	x,#20497
  318  005f 81            	ret
  354                     ; 108 static volatile uint8_t* GPIO_Get_CR1(GPIO_Port port)
@@ -153,13 +153,13 @@
  401                     ; 122             return &PD_CR1;
  403  007c ae5012        	ldw	x,#20498
  406  007f 81            	ret
- 442                     ; 130 static volatile uint8_t* GPIO_Get_CR2(GPIO_Port port)
- 442                     ; 131 {
+ 442                     ; 131 static volatile uint8_t* GPIO_Get_CR2(GPIO_Port port)
+ 442                     ; 132 {
  443                     	switch	.text
  444  0080               L512_GPIO_Get_CR2:
- 448                     ; 132     switch(port)
- 451                     ; 146         default:
- 451                     ; 147             return &PD_CR2;
+ 448                     ; 133     switch(port)
+ 451                     ; 147         default:
+ 451                     ; 148             return &PD_CR2;
  452  0080 4d            	tnz	a
  453  0081 270d          	jreq	L712
  454  0083 4a            	dec	a
@@ -172,45 +172,45 @@
  463  008c ae5013        	ldw	x,#20499
  466  008f 81            	ret
  467  0090               L712:
- 468                     ; 134         case PORT_A:
- 468                     ; 135             return &PA_CR2;
+ 468                     ; 135         case PORT_A:
+ 468                     ; 136             return &PA_CR2;
  470  0090 ae5004        	ldw	x,#20484
  473  0093 81            	ret
  474  0094               L122:
- 475                     ; 137         case PORT_B:
- 475                     ; 138             return &PB_CR2;
+ 475                     ; 138         case PORT_B:
+ 475                     ; 139             return &PB_CR2;
  477  0094 ae5009        	ldw	x,#20489
  480  0097 81            	ret
  481  0098               L322:
- 482                     ; 140         case PORT_C:
- 482                     ; 141             return &PC_CR2;
+ 482                     ; 141         case PORT_C:
+ 482                     ; 142             return &PC_CR2;
  484  0098 ae500e        	ldw	x,#20494
  487  009b 81            	ret
  488  009c               L522:
- 489                     ; 143         case PORT_D:
- 489                     ; 144             return &PD_CR2;
+ 489                     ; 144         case PORT_D:
+ 489                     ; 145             return &PD_CR2;
  491  009c ae5013        	ldw	x,#20499
  494  009f 81            	ret
- 634                     ; 156 void GPIO_Output_PP(GPIO_Port port, GPIO_Pin pin)
- 634                     ; 157 {
+ 634                     ; 157 void GPIO_Output_PP(GPIO_Port port, GPIO_Pin pin)
+ 634                     ; 158 {
  635                     	switch	.text
  636  00a0               _GPIO_Output_PP:
  638  00a0 89            	pushw	x
  639  00a1 5206          	subw	sp,#6
  640       00000006      OFST:	set	6
- 643                     ; 162     ddr = GPIO_Get_DDR(port);
+ 643                     ; 163     ddr = GPIO_Get_DDR(port);
  645  00a3 9e            	ld	a,xh
  646  00a4 ad9a          	call	L121_GPIO_Get_DDR
  648  00a6 1f01          	ldw	(OFST-5,sp),x
- 650                     ; 163     cr1 = GPIO_Get_CR1(port);
+ 650                     ; 164     cr1 = GPIO_Get_CR1(port);
  652  00a8 7b07          	ld	a,(OFST+1,sp)
  653  00aa adb4          	call	L751_GPIO_Get_CR1
  655  00ac 1f03          	ldw	(OFST-3,sp),x
- 657                     ; 164     cr2 = GPIO_Get_CR2(port);
+ 657                     ; 165     cr2 = GPIO_Get_CR2(port);
  659  00ae 7b07          	ld	a,(OFST+1,sp)
  660  00b0 adce          	call	L512_GPIO_Get_CR2
  662  00b2 1f05          	ldw	(OFST-1,sp),x
- 664                     ; 167     *ddr |= (1 << pin);
+ 664                     ; 168     *ddr |= (1 << pin);
  666  00b4 1e01          	ldw	x,(OFST-5,sp)
  667  00b6 7b08          	ld	a,(OFST+2,sp)
  668  00b8 905f          	clrw	y
@@ -225,7 +225,7 @@
  677  00c7               L02:
  678  00c7 fa            	or	a,(x)
  679  00c8 f7            	ld	(x),a
- 680                     ; 170     *cr1 |= (1 << pin);
+ 680                     ; 171     *cr1 |= (1 << pin);
  682  00c9 1e03          	ldw	x,(OFST-3,sp)
  683  00cb 7b08          	ld	a,(OFST+2,sp)
  684  00cd 905f          	clrw	y
@@ -240,7 +240,7 @@
  693  00dc               L42:
  694  00dc fa            	or	a,(x)
  695  00dd f7            	ld	(x),a
- 696                     ; 173     *cr2 &= ~(1 << pin);
+ 696                     ; 174     *cr2 &= ~(1 << pin);
  698  00de 1e05          	ldw	x,(OFST-1,sp)
  699  00e0 7b08          	ld	a,(OFST+2,sp)
  700  00e2 905f          	clrw	y
@@ -256,29 +256,29 @@
  710  00f1 43            	cpl	a
  711  00f2 f4            	and	a,(x)
  712  00f3 f7            	ld	(x),a
- 713                     ; 174 }
+ 713                     ; 175 }
  716  00f4 5b08          	addw	sp,#8
  717  00f6 81            	ret
- 795                     ; 181 void GPIO_Input_PU(GPIO_Port port, GPIO_Pin pin)
- 795                     ; 182 {
+ 795                     ; 182 void GPIO_Input_PU(GPIO_Port port, GPIO_Pin pin)
+ 795                     ; 183 {
  796                     	switch	.text
  797  00f7               _GPIO_Input_PU:
  799  00f7 89            	pushw	x
  800  00f8 5206          	subw	sp,#6
  801       00000006      OFST:	set	6
- 804                     ; 187     ddr = GPIO_Get_DDR(port);
+ 804                     ; 188     ddr = GPIO_Get_DDR(port);
  806  00fa 9e            	ld	a,xh
  807  00fb cd0040        	call	L121_GPIO_Get_DDR
  809  00fe 1f01          	ldw	(OFST-5,sp),x
- 811                     ; 188     cr1 = GPIO_Get_CR1(port);
+ 811                     ; 189     cr1 = GPIO_Get_CR1(port);
  813  0100 7b07          	ld	a,(OFST+1,sp)
  814  0102 cd0060        	call	L751_GPIO_Get_CR1
  816  0105 1f03          	ldw	(OFST-3,sp),x
- 818                     ; 189     cr2 = GPIO_Get_CR2(port);
+ 818                     ; 190     cr2 = GPIO_Get_CR2(port);
  820  0107 7b07          	ld	a,(OFST+1,sp)
  821  0109 cd0080        	call	L512_GPIO_Get_CR2
  823  010c 1f05          	ldw	(OFST-1,sp),x
- 825                     ; 192     *ddr &= ~(1 << pin);
+ 825                     ; 193     *ddr &= ~(1 << pin);
  827  010e 1e01          	ldw	x,(OFST-5,sp)
  828  0110 7b08          	ld	a,(OFST+2,sp)
  829  0112 905f          	clrw	y
@@ -294,7 +294,7 @@
  839  0121 43            	cpl	a
  840  0122 f4            	and	a,(x)
  841  0123 f7            	ld	(x),a
- 842                     ; 195     *cr1 |= (1 << pin);
+ 842                     ; 196     *cr1 |= (1 << pin);
  844  0124 1e03          	ldw	x,(OFST-3,sp)
  845  0126 7b08          	ld	a,(OFST+2,sp)
  846  0128 905f          	clrw	y
@@ -309,7 +309,7 @@
  855  0137               L24:
  856  0137 fa            	or	a,(x)
  857  0138 f7            	ld	(x),a
- 858                     ; 198     *cr2 &= ~(1 << pin);
+ 858                     ; 199     *cr2 &= ~(1 << pin);
  860  0139 1e05          	ldw	x,(OFST-1,sp)
  861  013b 7b08          	ld	a,(OFST+2,sp)
  862  013d 905f          	clrw	y
@@ -325,21 +325,21 @@
  872  014c 43            	cpl	a
  873  014d f4            	and	a,(x)
  874  014e f7            	ld	(x),a
- 875                     ; 199 }
+ 875                     ; 200 }
  878  014f 5b08          	addw	sp,#8
  879  0151 81            	ret
- 935                     ; 206 void GPIO_Set(GPIO_Port port, GPIO_Pin pin)
- 935                     ; 207 {
+ 935                     ; 207 void GPIO_Set(GPIO_Port port, GPIO_Pin pin)
+ 935                     ; 208 {
  936                     	switch	.text
  937  0152               _GPIO_Set:
  939  0152 89            	pushw	x
  940  0153 89            	pushw	x
  941       00000002      OFST:	set	2
- 944                     ; 210     odr = GPIO_Get_ODR(port);
+ 944                     ; 211     odr = GPIO_Get_ODR(port);
  946  0154 9e            	ld	a,xh
  947  0155 cd0000        	call	L3_GPIO_Get_ODR
  949  0158 1f01          	ldw	(OFST-1,sp),x
- 951                     ; 212     *odr |= (1 << pin);
+ 951                     ; 213     *odr |= (1 << pin);
  953  015a 1e01          	ldw	x,(OFST-1,sp)
  954  015c 7b04          	ld	a,(OFST+2,sp)
  955  015e 905f          	clrw	y
@@ -354,21 +354,21 @@
  964  016d               L45:
  965  016d fa            	or	a,(x)
  966  016e f7            	ld	(x),a
- 967                     ; 213 }
+ 967                     ; 214 }
  970  016f 5b04          	addw	sp,#4
  971  0171 81            	ret
-1027                     ; 220 void GPIO_Clear(GPIO_Port port, GPIO_Pin pin)
-1027                     ; 221 {
+1027                     ; 221 void GPIO_Clear(GPIO_Port port, GPIO_Pin pin)
+1027                     ; 222 {
 1028                     	switch	.text
 1029  0172               _GPIO_Clear:
 1031  0172 89            	pushw	x
 1032  0173 89            	pushw	x
 1033       00000002      OFST:	set	2
-1036                     ; 224     odr = GPIO_Get_ODR(port);
+1036                     ; 225     odr = GPIO_Get_ODR(port);
 1038  0174 9e            	ld	a,xh
 1039  0175 cd0000        	call	L3_GPIO_Get_ODR
 1041  0178 1f01          	ldw	(OFST-1,sp),x
-1043                     ; 226     *odr &= ~(1 << pin);
+1043                     ; 227     *odr &= ~(1 << pin);
 1045  017a 1e01          	ldw	x,(OFST-1,sp)
 1046  017c 7b04          	ld	a,(OFST+2,sp)
 1047  017e 905f          	clrw	y
@@ -384,21 +384,21 @@
 1057  018d 43            	cpl	a
 1058  018e f4            	and	a,(x)
 1059  018f f7            	ld	(x),a
-1060                     ; 227 }
+1060                     ; 228 }
 1063  0190 5b04          	addw	sp,#4
 1064  0192 81            	ret
-1120                     ; 234 void GPIO_Toggle(GPIO_Port port, GPIO_Pin pin)
-1120                     ; 235 {
+1120                     ; 235 void GPIO_Toggle(GPIO_Port port, GPIO_Pin pin)
+1120                     ; 236 {
 1121                     	switch	.text
 1122  0193               _GPIO_Toggle:
 1124  0193 89            	pushw	x
 1125  0194 89            	pushw	x
 1126       00000002      OFST:	set	2
-1129                     ; 238     odr = GPIO_Get_ODR(port);
+1129                     ; 239     odr = GPIO_Get_ODR(port);
 1131  0195 9e            	ld	a,xh
 1132  0196 cd0000        	call	L3_GPIO_Get_ODR
 1134  0199 1f01          	ldw	(OFST-1,sp),x
-1136                     ; 240     *odr ^= (1 << pin);
+1136                     ; 241     *odr ^= (1 << pin);
 1138  019b 1e01          	ldw	x,(OFST-1,sp)
 1139  019d 7b04          	ld	a,(OFST+2,sp)
 1140  019f 905f          	clrw	y
@@ -413,21 +413,21 @@
 1149  01ae               L07:
 1150  01ae f8            	xor	a,(x)
 1151  01af f7            	ld	(x),a
-1152                     ; 241 }
+1152                     ; 242 }
 1155  01b0 5b04          	addw	sp,#4
 1156  01b2 81            	ret
-1212                     ; 248 uint8_t GPIO_Read(GPIO_Port port, GPIO_Pin pin)
-1212                     ; 249 {
+1212                     ; 249 uint8_t GPIO_Read(GPIO_Port port, GPIO_Pin pin)
+1212                     ; 250 {
 1213                     	switch	.text
 1214  01b3               _GPIO_Read:
 1216  01b3 89            	pushw	x
 1217  01b4 5204          	subw	sp,#4
 1218       00000004      OFST:	set	4
-1221                     ; 252     idr = GPIO_Get_IDR(port);
+1221                     ; 253     idr = GPIO_Get_IDR(port);
 1223  01b6 9e            	ld	a,xh
 1224  01b7 cd0020        	call	L36_GPIO_Get_IDR
 1226  01ba 1f03          	ldw	(OFST-1,sp),x
-1228                     ; 254     return (*idr & (1 << pin)) ? TRUE : FALSE;
+1228                     ; 255     return (*idr & (1 << pin)) ? TRUE : FALSE;
 1230  01bc 1e03          	ldw	x,(OFST-1,sp)
 1231  01be f6            	ld	a,(x)
 1232  01bf 5f            	clrw	x

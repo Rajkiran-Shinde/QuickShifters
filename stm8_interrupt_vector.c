@@ -4,6 +4,7 @@
 
 #include "timer.h"
 #include "stm8_hw.h"
+#include "buzzer.h"
 
 typedef void @far (*interrupt_handler_t)(void);
 
@@ -21,6 +22,14 @@ struct interrupt_vector
 
 /* Startup routine */
 extern void _stext(void);
+
+/*----------------------------------------------------------
+    TIM2 Update / Overflow Interrupt
+----------------------------------------------------------*/
+INTERRUPT_HANDLER(TIM2_UPD_OVF_BRK_IRQHandler, 13)
+{
+    Buzzer_TickISR();
+}
 
 /*----------------------------------------------------------
     TIM4 Update / Overflow Interrupt
@@ -54,7 +63,7 @@ struct interrupt_vector const _vectab[] =
     {0x82, NonHandledInterrupt},                       /* irq10 */
     {0x82, NonHandledInterrupt},                       /* irq11 */
     {0x82, NonHandledInterrupt},                       /* irq12 */
-    {0x82, NonHandledInterrupt},                       /* irq13 */
+		{0x82, TIM2_UPD_OVF_BRK_IRQHandler},               /* irq13 : TIM2 Update/Overflow */
     {0x82, NonHandledInterrupt},                       /* irq14 */
     {0x82, NonHandledInterrupt},                       /* irq15 */
     {0x82, NonHandledInterrupt},                       /* irq16 */

@@ -4,6 +4,7 @@
 #include "timer.h"
 #include "mode.h"
 #include "debug.h"
+#include "buzzer.h"
 
 
 /************************************************
@@ -118,6 +119,7 @@ void QuickShifter_Task(void)
                 /*
                  * A valid debounced press has occurred.
                  */
+								 Buzzer_Play(BUZZER_EVENT_SHIFT);
 
                 Relay_On();
 

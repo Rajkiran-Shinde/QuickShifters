@@ -42,66 +42,66 @@
 static volatile uint8_t* GPIO_Get_ODR(GPIO_Port port)
 {
     switch(port)
-    {
-        case PORT_A:
-            return &PA_ODR;
+{
+    case PORT_A:
+        return &PA_ODR;
 
-        case PORT_B:
-            return &PB_ODR;
+    case PORT_B:
+        return &PB_ODR;
 
-        case PORT_C:
-            return &PC_ODR;
+    case PORT_C:
+        return &PC_ODR;
 
-        case PORT_D:
-            return &PD_ODR;
+    case PORT_D:
+        return &PD_ODR;
 
-        default:
-            return &PD_ODR;
-    }
+    default:
+        return &PD_ODR;
+}
 }
 
 
 static volatile uint8_t* GPIO_Get_IDR(GPIO_Port port)
 {
-    switch(port)
-    {
-        case PORT_A:
-            return &PA_IDR;
+	switch(port)
+{
+    case PORT_A:
+        return &PA_IDR;
 
-        case PORT_B:
-            return &PB_IDR;
+    case PORT_B:
+        return &PB_IDR;
 
-        case PORT_C:
-            return &PC_IDR;
+    case PORT_C:
+        return &PC_IDR;
 
-        case PORT_D:
-            return &PD_IDR;
+    case PORT_D:
+        return &PD_IDR;
 
-        default:
-            return &PD_IDR;
-    }
+    default:
+        return &PD_IDR;
+}
 }
 
 
 static volatile uint8_t* GPIO_Get_DDR(GPIO_Port port)
 {
-    switch(port)
-    {
-        case PORT_A:
-            return &PA_DDR;
+	switch(port)
+{
+    case PORT_A:
+        return &PA_DDR;
 
-        case PORT_B:
-            return &PB_DDR;
+    case PORT_B:
+        return &PB_DDR;
 
-        case PORT_C:
-            return &PC_DDR;
+    case PORT_C:
+        return &PC_DDR;
 
-        case PORT_D:
-            return &PD_DDR;
+    case PORT_D:
+        return &PD_DDR;
 
-        default:
-            return &PD_DDR;
-    }
+    default:
+        return &PD_DDR;
+}
 }
 
 
@@ -123,6 +123,7 @@ static volatile uint8_t* GPIO_Get_CR1(GPIO_Port port)
 
         default:
             return &PD_CR1;
+		
     }
 }
 

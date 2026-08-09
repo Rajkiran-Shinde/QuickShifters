@@ -8,11 +8,6 @@
  * LED INITIALIZATION
  * ============================================================ */
 
-/*
- * Initialize all LED GPIOs.
- *
- * At startup all LEDs are placed in the safe/OFF state.
- */
 void LED_Init(void);
 
 
@@ -21,18 +16,18 @@ void LED_Init(void);
  * ============================================================ */
 
 /*
- * Turn a specific mode LED ON or OFF.
- *
  * mode:
- *     1 -> Mode LED 1
- *     2 -> Mode LED 2
- *     3 -> Mode LED 3
- *     4 -> Mode LED 4
- *     5 -> Mode LED 5
+ *
+ * 1 -> Mode LED 1
+ * 2 -> Mode LED 2
+ * 3 -> Mode LED 3
+ * 4 -> Mode LED 4
+ * 5 -> Mode LED 5
  *
  * state:
- *     TRUE  -> ON
- *     FALSE -> OFF
+ *
+ * TRUE  -> ON
+ * FALSE -> OFF
  */
 void LED_Mode_Set(uint8_t mode, uint8_t state);
 
@@ -44,14 +39,10 @@ void LED_Mode_AllOff(void);
 
 
 /*
- * Display the currently selected mode.
+ * Display the selected mode.
  *
- * Example:
- *
- * Mode 1 -> LED1 ON
- * Mode 2 -> LED2 ON
- * ...
- * Mode 5 -> LED5 ON
+ * Only the LED corresponding to the selected
+ * mode will remain ON.
  */
 void LED_Mode_Display(uint8_t mode);
 
@@ -60,16 +51,39 @@ void LED_Mode_Display(uint8_t mode);
  * SYSTEM STATUS RGB LED
  * ============================================================ */
 
+/*
+ * Turn RGB status LED OFF.
+ */
 void LED_Status_Off(void);
 
+
+/*
+ * Red status.
+ */
 void LED_Status_Red(void);
 
+
+/*
+ * Green status.
+ */
 void LED_Status_Green(void);
 
+
+/*
+ * Blue status.
+ */
 void LED_Status_Blue(void);
 
+
+/*
+ * Red + Green = Yellow.
+ */
 void LED_Status_Yellow(void);
 
+
+/*
+ * Red + Blue = Purple.
+ */
 void LED_Status_Purple(void);
 
 

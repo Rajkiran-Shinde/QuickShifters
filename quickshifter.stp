@@ -299,6 +299,11 @@ Next=Root.Documentation.03_modeselection.md
 [Root.Documentation.03_modeselection.md]
 ElemType=File
 PathName=03_modeselection.md
+Next=Root.Documentation.04_firmwaresafety.md
+
+[Root.Documentation.04_firmwaresafety.md]
+ElemType=File
+PathName=04_firmwaresafety.md
 Next=Root.Documentation.pin_config.md
 
 [Root.Documentation.pin_config.md]
@@ -382,6 +387,11 @@ String.6.0=2026,8,7,18,42,14
 [Root.Include.button.h]
 ElemType=File
 PathName=button.h
+Next=Root.Include.buzzer.h
+
+[Root.Include.buzzer.h]
+ElemType=File
+PathName=buzzer.h
 Next=Root.Include.clock.h
 
 [Root.Include.clock.h]
@@ -412,6 +422,11 @@ Next=Root.Include.gpio.h
 [Root.Include.gpio.h]
 ElemType=File
 PathName=gpio.h
+Next=Root.Include.led.h
+
+[Root.Include.led.h]
+ElemType=File
+PathName=led.h
 Next=Root.Include.mode.h
 
 [Root.Include.mode.h]
@@ -529,6 +544,11 @@ String.6.0=2026,8,7,18,42,14
 [Root.Source Files.button.c]
 ElemType=File
 PathName=button.c
+Next=Root.Source Files.buzzer.c
+
+[Root.Source Files.buzzer.c]
+ElemType=File
+PathName=buzzer.c
 Next=Root.Source Files.clock.c
 
 [Root.Source Files.clock.c]
@@ -549,6 +569,11 @@ Next=Root.Source Files.gpio.c
 [Root.Source Files.gpio.c]
 ElemType=File
 PathName=gpio.c
+Next=Root.Source Files.led.c
+
+[Root.Source Files.led.c]
+ElemType=File
+PathName=led.c
 Next=Root.Source Files.main.c
 
 [Root.Source Files.main.c]

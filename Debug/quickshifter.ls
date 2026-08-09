@@ -1,243 +1,249 @@
    1                     ; C Compiler for STM8 (COSMIC Software)
    2                     ; Parser V4.13.3 - 22 May 2025
    3                     ; Generator (Limited) V4.6.6 - 07 Jan 2026
-  44                     ; 77 void QuickShifter_Init(void)
-  44                     ; 78 {
+  44                     ; 78 void QuickShifter_Init(void)
+  44                     ; 79 {
   46                     	switch	.text
   47  0000               _QuickShifter_Init:
-  51                     ; 85     Relay_Init();
+  51                     ; 86     Relay_Init();
   53  0000 cd0000        	call	_Relay_Init
-  55                     ; 91     currentState = QS_STATE_IDLE;
+  55                     ; 92     currentState = QS_STATE_IDLE;
   57  0003 3f1b          	clr	L3_currentState
-  58                     ; 92 }
+  58                     ; 93 }
   61  0005 81            	ret
-  96                     ; 99 void QuickShifter_Task(void)
-  96                     ; 100 {
-  97                     	switch	.text
-  98  0006               _QuickShifter_Task:
- 102                     ; 101     switch(currentState)
- 104  0006 b61b          	ld	a,L3_currentState
- 106                     ; 349             break;
- 107  0008 4d            	tnz	a
- 108  0009 271d          	jreq	L13
- 109  000b 4a            	dec	a
- 110  000c 274d          	jreq	L33
- 111  000e 4a            	dec	a
- 112  000f 2603cc0095    	jreq	L53
- 113  0014 4a            	dec	a
- 114  0015 2603cc00a4    	jreq	L73
- 115  001a 4a            	dec	a
- 116  001b 2603          	jrne	L01
- 117  001d cc00ae        	jp	L14
- 118  0020               L01:
- 119  0020               L34:
- 120                     ; 333         default:
- 120                     ; 334 
- 120                     ; 335             /*
- 120                     ; 336              * FAIL-SAFE BEHAVIOR
- 120                     ; 337              *
- 120                     ; 338              * If the state machine ever reaches
- 120                     ; 339              * an invalid state:
- 120                     ; 340              *
- 120                     ; 341              * 1. Turn relay OFF immediately.
- 120                     ; 342              * 2. Return to a known safe state.
- 120                     ; 343              */
- 120                     ; 344             Relay_Off();
- 122  0020 cd0000        	call	_Relay_Off
- 124                     ; 346             currentState =
- 124                     ; 347                 QS_STATE_IDLE;
- 126  0023 3f1b          	clr	L3_currentState
- 127                     ; 349             break;
- 129  0025 cc00b1        	jra	L75
- 130  0028               L13:
- 131                     ; 108         case QS_STATE_IDLE:
- 131                     ; 109 
- 131                     ; 110             /*
- 131                     ; 111              * Relay must be OFF while idle.
- 131                     ; 112              *
- 131                     ; 113              * A valid debounced button press
- 131                     ; 114              * starts a new QuickShifter cut.
- 131                     ; 115              */
- 131                     ; 116             if(Button_GetPress())
- 133  0028 cd0000        	call	_Button_GetPress
- 135  002b 4d            	tnz	a
- 136  002c 27f7          	jreq	L75
- 137                     ; 122                 Relay_On();
- 139  002e cd0000        	call	_Relay_On
- 141                     ; 134                 SoftwareTimer_Start(
- 141                     ; 135                     &relayTimer,
- 141                     ; 136                     Mode_GetCutTime()
- 141                     ; 137                 );
- 143  0031 cd0000        	call	_Mode_GetCutTime
- 145  0034 cd0000        	call	c_uitolx
- 147  0037 be02          	ldw	x,c_lreg+2
- 148  0039 89            	pushw	x
- 149  003a be00          	ldw	x,c_lreg
- 150  003c 89            	pushw	x
- 151  003d ae0012        	ldw	x,#L5_relayTimer
- 152  0040 cd0000        	call	_SoftwareTimer_Start
- 154  0043 5b04          	addw	sp,#4
- 155                     ; 147                 SoftwareTimer_Start(
- 155                     ; 148                     &safetyTimer,
- 155                     ; 149                     QS_MAX_CUT_TIME_MS
- 155                     ; 150                 );
- 157  0045 ae0064        	ldw	x,#100
- 158  0048 89            	pushw	x
- 159  0049 ae0000        	ldw	x,#0
- 160  004c 89            	pushw	x
- 161  004d ae0000        	ldw	x,#L11_safetyTimer
- 162  0050 cd0000        	call	_SoftwareTimer_Start
- 164  0053 5b04          	addw	sp,#4
- 165                     ; 156                 currentState =
- 165                     ; 157                     QS_STATE_CUT_ACTIVE;
- 167  0055 3501001b      	mov	L3_currentState,#1
- 168  0059 2056          	jra	L75
- 169  005b               L33:
- 170                     ; 167         case QS_STATE_CUT_ACTIVE:
- 170                     ; 168 
- 170                     ; 169             /*
- 170                     ; 170              * Relay is currently ON.
- 170                     ; 171              *
- 170                     ; 172              * Two timers are running:
- 170                     ; 173              *
- 170                     ; 174              * 1. relayTimer
- 170                     ; 175              *    -> normal 40-80 ms cut
- 170                     ; 176              *
- 170                     ; 177              * 2. safetyTimer
- 170                     ; 178              *    -> absolute 100 ms limit
- 170                     ; 179              */
- 170                     ; 180 
- 170                     ; 181 
- 170                     ; 182             /************************************
- 170                     ; 183                     SAFETY TIMER CHECK
- 170                     ; 184             ************************************/
- 170                     ; 185 
- 170                     ; 186             /*
- 170                     ; 187              * Check the safety timer FIRST.
- 170                     ; 188              *
- 170                     ; 189              * If this expires, something has gone
- 170                     ; 190              * wrong with the normal timing path.
- 170                     ; 191              */
- 170                     ; 192             if(SoftwareTimer_Expired(&safetyTimer))
- 172  005b ae0000        	ldw	x,#L11_safetyTimer
- 173  005e cd0000        	call	_SoftwareTimer_Expired
- 175  0061 4d            	tnz	a
- 176  0062 270f          	jreq	L36
- 177                     ; 199                 Relay_Off();
- 179  0064 cd0000        	call	_Relay_Off
- 181                     ; 205                 Debug_Log(
- 181                     ; 206                     "[FAULT] Maximum cut time exceeded\r\n"
- 181                     ; 207                 );
- 183  0067 ae0000        	ldw	x,#L56
- 184  006a cd0000        	call	_Debug_Log
- 186                     ; 213                 currentState =
- 186                     ; 214                     QS_STATE_FAULT;
- 188  006d 3504001b      	mov	L3_currentState,#4
- 189                     ; 216                 break;
- 191  0071 203e          	jra	L75
- 192  0073               L36:
- 193                     ; 227             if(SoftwareTimer_Expired(&relayTimer))
- 195  0073 ae0012        	ldw	x,#L5_relayTimer
- 196  0076 cd0000        	call	_SoftwareTimer_Expired
- 198  0079 4d            	tnz	a
- 199  007a 2735          	jreq	L75
- 200                     ; 234                 Relay_Off();
- 202  007c cd0000        	call	_Relay_Off
- 204                     ; 243                 SoftwareTimer_Start(
- 204                     ; 244                     &cooldownTimer,
- 204                     ; 245                     100
- 204                     ; 246                 );
- 206  007f ae0064        	ldw	x,#100
- 207  0082 89            	pushw	x
- 208  0083 ae0000        	ldw	x,#0
- 209  0086 89            	pushw	x
- 210  0087 ae0009        	ldw	x,#L7_cooldownTimer
- 211  008a cd0000        	call	_SoftwareTimer_Start
- 213  008d 5b04          	addw	sp,#4
- 214                     ; 252                 currentState =
- 214                     ; 253                     QS_STATE_COOLDOWN;
- 216  008f 3502001b      	mov	L3_currentState,#2
- 217  0093 201c          	jra	L75
- 218  0095               L53:
- 219                     ; 263         case QS_STATE_COOLDOWN:
- 219                     ; 264 
- 219                     ; 265             /*
- 219                     ; 266              * Relay was already turned OFF when
- 219                     ; 267              * entering this state.
- 219                     ; 268              *
- 219                     ; 269              * Additional shift presses are ignored
- 219                     ; 270              * during cooldown.
- 219                     ; 271              */
- 219                     ; 272 
- 219                     ; 273             if(SoftwareTimer_Expired(&cooldownTimer))
- 221  0095 ae0009        	ldw	x,#L7_cooldownTimer
- 222  0098 cd0000        	call	_SoftwareTimer_Expired
- 224  009b 4d            	tnz	a
- 225  009c 2713          	jreq	L75
- 226                     ; 281                 currentState =
- 226                     ; 282                     QS_STATE_WAIT_RELEASE;
- 228  009e 3503001b      	mov	L3_currentState,#3
- 229  00a2 200d          	jra	L75
- 230  00a4               L73:
- 231                     ; 292         case QS_STATE_WAIT_RELEASE:
- 231                     ; 293 
- 231                     ; 294             /*
- 231                     ; 295              * Wait until the debounced shift button
- 231                     ; 296              * is actually released.
- 231                     ; 297              *
- 231                     ; 298              * This prevents one long button press
- 231                     ; 299              * from generating multiple cuts.
- 231                     ; 300              */
- 231                     ; 301             if(Button_IsPressed() == FALSE)
- 233  00a4 cd0000        	call	_Button_IsPressed
- 235  00a7 4d            	tnz	a
- 236  00a8 2607          	jrne	L75
- 237                     ; 303                 currentState =
- 237                     ; 304                     QS_STATE_IDLE;
- 239  00aa 3f1b          	clr	L3_currentState
- 240  00ac 2003          	jra	L75
- 241  00ae               L14:
- 242                     ; 314         case QS_STATE_FAULT:
- 242                     ; 315 
- 242                     ; 316             /*
- 242                     ; 317              * FAIL-SAFE STATE
- 242                     ; 318              *
- 242                     ; 319              * Relay MUST remain OFF.
- 242                     ; 320              *
- 242                     ; 321              * No further QuickShifter cuts are
- 242                     ; 322              * allowed while the system is in FAULT.
- 242                     ; 323              */
- 242                     ; 324             Relay_Off();
- 244  00ae cd0000        	call	_Relay_Off
- 246                     ; 326             break;
- 248  00b1               L75:
- 249                     ; 351 }
- 252  00b1 81            	ret
- 378                     	switch	.ubsct
- 379  0000               L11_safetyTimer:
- 380  0000 000000000000  	ds.b	9
- 381  0009               L7_cooldownTimer:
- 382  0009 000000000000  	ds.b	9
- 383  0012               L5_relayTimer:
- 384  0012 000000000000  	ds.b	9
- 385  001b               L3_currentState:
- 386  001b 00            	ds.b	1
- 387                     	xref	_Debug_Log
- 388                     	xref	_Mode_GetCutTime
- 389                     	xref	_Relay_Off
- 390                     	xref	_Relay_On
- 391                     	xref	_Relay_Init
- 392                     	xref	_Button_IsPressed
- 393                     	xref	_Button_GetPress
- 394                     	xdef	_QuickShifter_Task
- 395                     	xdef	_QuickShifter_Init
- 396                     	xref	_SoftwareTimer_Expired
- 397                     	xref	_SoftwareTimer_Start
- 398                     .const:	section	.text
- 399  0000               L56:
- 400  0000 5b4641554c54  	dc.b	"[FAULT] Maximum cu"
- 401  0012 742074696d65  	dc.b	"t time exceeded",13
- 402  0022 0a00          	dc.b	10,0
- 403                     	xref.b	c_lreg
- 423                     	xref	c_uitolx
- 424                     	end
+  97                     ; 100 void QuickShifter_Task(void)
+  97                     ; 101 {
+  98                     	switch	.text
+  99  0006               _QuickShifter_Task:
+ 103                     ; 102     switch(currentState)
+ 105  0006 b61b          	ld	a,L3_currentState
+ 107                     ; 351             break;
+ 108  0008 4d            	tnz	a
+ 109  0009 271e          	jreq	L13
+ 110  000b 4a            	dec	a
+ 111  000c 2756          	jreq	L33
+ 112  000e 4a            	dec	a
+ 113  000f 2603cc009e    	jreq	L53
+ 114  0014 4a            	dec	a
+ 115  0015 2603          	jrne	L01
+ 116  0017 cc00ad        	jp	L73
+ 117  001a               L01:
+ 118  001a 4a            	dec	a
+ 119  001b 2603          	jrne	L21
+ 120  001d cc00b7        	jp	L14
+ 121  0020               L21:
+ 122  0020               L34:
+ 123                     ; 335         default:
+ 123                     ; 336 
+ 123                     ; 337             /*
+ 123                     ; 338              * FAIL-SAFE BEHAVIOR
+ 123                     ; 339              *
+ 123                     ; 340              * If the state machine ever reaches
+ 123                     ; 341              * an invalid state:
+ 123                     ; 342              *
+ 123                     ; 343              * 1. Turn relay OFF immediately.
+ 123                     ; 344              * 2. Return to a known safe state.
+ 123                     ; 345              */
+ 123                     ; 346             Relay_Off();
+ 125  0020 cd0000        	call	_Relay_Off
+ 127                     ; 348             currentState =
+ 127                     ; 349                 QS_STATE_IDLE;
+ 129  0023 3f1b          	clr	L3_currentState
+ 130                     ; 351             break;
+ 132  0025 acba00ba      	jpf	L75
+ 133  0029               L13:
+ 134                     ; 109         case QS_STATE_IDLE:
+ 134                     ; 110 
+ 134                     ; 111             /*
+ 134                     ; 112              * Relay must be OFF while idle.
+ 134                     ; 113              *
+ 134                     ; 114              * A valid debounced button press
+ 134                     ; 115              * starts a new QuickShifter cut.
+ 134                     ; 116              */
+ 134                     ; 117             if(Button_GetPress())
+ 136  0029 cd0000        	call	_Button_GetPress
+ 138  002c 4d            	tnz	a
+ 139  002d 2603cc00ba    	jreq	L75
+ 140                     ; 122 								 Buzzer_Play(BUZZER_EVENT_SHIFT);
+ 142  0032 a602          	ld	a,#2
+ 143  0034 cd0000        	call	_Buzzer_Play
+ 145                     ; 124                 Relay_On();
+ 147  0037 cd0000        	call	_Relay_On
+ 149                     ; 136                 SoftwareTimer_Start(
+ 149                     ; 137                     &relayTimer,
+ 149                     ; 138                     Mode_GetCutTime()
+ 149                     ; 139                 );
+ 151  003a cd0000        	call	_Mode_GetCutTime
+ 153  003d cd0000        	call	c_uitolx
+ 155  0040 be02          	ldw	x,c_lreg+2
+ 156  0042 89            	pushw	x
+ 157  0043 be00          	ldw	x,c_lreg
+ 158  0045 89            	pushw	x
+ 159  0046 ae0012        	ldw	x,#L5_relayTimer
+ 160  0049 cd0000        	call	_SoftwareTimer_Start
+ 162  004c 5b04          	addw	sp,#4
+ 163                     ; 149                 SoftwareTimer_Start(
+ 163                     ; 150                     &safetyTimer,
+ 163                     ; 151                     QS_MAX_CUT_TIME_MS
+ 163                     ; 152                 );
+ 165  004e ae0064        	ldw	x,#100
+ 166  0051 89            	pushw	x
+ 167  0052 ae0000        	ldw	x,#0
+ 168  0055 89            	pushw	x
+ 169  0056 ae0000        	ldw	x,#L11_safetyTimer
+ 170  0059 cd0000        	call	_SoftwareTimer_Start
+ 172  005c 5b04          	addw	sp,#4
+ 173                     ; 158                 currentState =
+ 173                     ; 159                     QS_STATE_CUT_ACTIVE;
+ 175  005e 3501001b      	mov	L3_currentState,#1
+ 176  0062 2056          	jra	L75
+ 177  0064               L33:
+ 178                     ; 169         case QS_STATE_CUT_ACTIVE:
+ 178                     ; 170 
+ 178                     ; 171             /*
+ 178                     ; 172              * Relay is currently ON.
+ 178                     ; 173              *
+ 178                     ; 174              * Two timers are running:
+ 178                     ; 175              *
+ 178                     ; 176              * 1. relayTimer
+ 178                     ; 177              *    -> normal 40-80 ms cut
+ 178                     ; 178              *
+ 178                     ; 179              * 2. safetyTimer
+ 178                     ; 180              *    -> absolute 100 ms limit
+ 178                     ; 181              */
+ 178                     ; 182 
+ 178                     ; 183 
+ 178                     ; 184             /************************************
+ 178                     ; 185                     SAFETY TIMER CHECK
+ 178                     ; 186             ************************************/
+ 178                     ; 187 
+ 178                     ; 188             /*
+ 178                     ; 189              * Check the safety timer FIRST.
+ 178                     ; 190              *
+ 178                     ; 191              * If this expires, something has gone
+ 178                     ; 192              * wrong with the normal timing path.
+ 178                     ; 193              */
+ 178                     ; 194             if(SoftwareTimer_Expired(&safetyTimer))
+ 180  0064 ae0000        	ldw	x,#L11_safetyTimer
+ 181  0067 cd0000        	call	_SoftwareTimer_Expired
+ 183  006a 4d            	tnz	a
+ 184  006b 270f          	jreq	L36
+ 185                     ; 201                 Relay_Off();
+ 187  006d cd0000        	call	_Relay_Off
+ 189                     ; 207                 Debug_Log(
+ 189                     ; 208                     "[FAULT] Maximum cut time exceeded\r\n"
+ 189                     ; 209                 );
+ 191  0070 ae0000        	ldw	x,#L56
+ 192  0073 cd0000        	call	_Debug_Log
+ 194                     ; 215                 currentState =
+ 194                     ; 216                     QS_STATE_FAULT;
+ 196  0076 3504001b      	mov	L3_currentState,#4
+ 197                     ; 218                 break;
+ 199  007a 203e          	jra	L75
+ 200  007c               L36:
+ 201                     ; 229             if(SoftwareTimer_Expired(&relayTimer))
+ 203  007c ae0012        	ldw	x,#L5_relayTimer
+ 204  007f cd0000        	call	_SoftwareTimer_Expired
+ 206  0082 4d            	tnz	a
+ 207  0083 2735          	jreq	L75
+ 208                     ; 236                 Relay_Off();
+ 210  0085 cd0000        	call	_Relay_Off
+ 212                     ; 245                 SoftwareTimer_Start(
+ 212                     ; 246                     &cooldownTimer,
+ 212                     ; 247                     100
+ 212                     ; 248                 );
+ 214  0088 ae0064        	ldw	x,#100
+ 215  008b 89            	pushw	x
+ 216  008c ae0000        	ldw	x,#0
+ 217  008f 89            	pushw	x
+ 218  0090 ae0009        	ldw	x,#L7_cooldownTimer
+ 219  0093 cd0000        	call	_SoftwareTimer_Start
+ 221  0096 5b04          	addw	sp,#4
+ 222                     ; 254                 currentState =
+ 222                     ; 255                     QS_STATE_COOLDOWN;
+ 224  0098 3502001b      	mov	L3_currentState,#2
+ 225  009c 201c          	jra	L75
+ 226  009e               L53:
+ 227                     ; 265         case QS_STATE_COOLDOWN:
+ 227                     ; 266 
+ 227                     ; 267             /*
+ 227                     ; 268              * Relay was already turned OFF when
+ 227                     ; 269              * entering this state.
+ 227                     ; 270              *
+ 227                     ; 271              * Additional shift presses are ignored
+ 227                     ; 272              * during cooldown.
+ 227                     ; 273              */
+ 227                     ; 274 
+ 227                     ; 275             if(SoftwareTimer_Expired(&cooldownTimer))
+ 229  009e ae0009        	ldw	x,#L7_cooldownTimer
+ 230  00a1 cd0000        	call	_SoftwareTimer_Expired
+ 232  00a4 4d            	tnz	a
+ 233  00a5 2713          	jreq	L75
+ 234                     ; 283                 currentState =
+ 234                     ; 284                     QS_STATE_WAIT_RELEASE;
+ 236  00a7 3503001b      	mov	L3_currentState,#3
+ 237  00ab 200d          	jra	L75
+ 238  00ad               L73:
+ 239                     ; 294         case QS_STATE_WAIT_RELEASE:
+ 239                     ; 295 
+ 239                     ; 296             /*
+ 239                     ; 297              * Wait until the debounced shift button
+ 239                     ; 298              * is actually released.
+ 239                     ; 299              *
+ 239                     ; 300              * This prevents one long button press
+ 239                     ; 301              * from generating multiple cuts.
+ 239                     ; 302              */
+ 239                     ; 303             if(Button_IsPressed() == FALSE)
+ 241  00ad cd0000        	call	_Button_IsPressed
+ 243  00b0 4d            	tnz	a
+ 244  00b1 2607          	jrne	L75
+ 245                     ; 305                 currentState =
+ 245                     ; 306                     QS_STATE_IDLE;
+ 247  00b3 3f1b          	clr	L3_currentState
+ 248  00b5 2003          	jra	L75
+ 249  00b7               L14:
+ 250                     ; 316         case QS_STATE_FAULT:
+ 250                     ; 317 
+ 250                     ; 318             /*
+ 250                     ; 319              * FAIL-SAFE STATE
+ 250                     ; 320              *
+ 250                     ; 321              * Relay MUST remain OFF.
+ 250                     ; 322              *
+ 250                     ; 323              * No further QuickShifter cuts are
+ 250                     ; 324              * allowed while the system is in FAULT.
+ 250                     ; 325              */
+ 250                     ; 326             Relay_Off();
+ 252  00b7 cd0000        	call	_Relay_Off
+ 254                     ; 328             break;
+ 256  00ba               L75:
+ 257                     ; 353 }
+ 260  00ba 81            	ret
+ 386                     	switch	.ubsct
+ 387  0000               L11_safetyTimer:
+ 388  0000 000000000000  	ds.b	9
+ 389  0009               L7_cooldownTimer:
+ 390  0009 000000000000  	ds.b	9
+ 391  0012               L5_relayTimer:
+ 392  0012 000000000000  	ds.b	9
+ 393  001b               L3_currentState:
+ 394  001b 00            	ds.b	1
+ 395                     	xref	_Buzzer_Play
+ 396                     	xref	_Debug_Log
+ 397                     	xref	_Mode_GetCutTime
+ 398                     	xref	_Relay_Off
+ 399                     	xref	_Relay_On
+ 400                     	xref	_Relay_Init
+ 401                     	xref	_Button_IsPressed
+ 402                     	xref	_Button_GetPress
+ 403                     	xdef	_QuickShifter_Task
+ 404                     	xdef	_QuickShifter_Init
+ 405                     	xref	_SoftwareTimer_Expired
+ 406                     	xref	_SoftwareTimer_Start
+ 407                     .const:	section	.text
+ 408  0000               L56:
+ 409  0000 5b4641554c54  	dc.b	"[FAULT] Maximum cu"
+ 410  0012 742074696d65  	dc.b	"t time exceeded",13
+ 411  0022 0a00          	dc.b	10,0
+ 412                     	xref.b	c_lreg
+ 432                     	xref	c_uitolx
+ 433                     	end
