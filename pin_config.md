@@ -15,4 +15,4 @@ Red --> B4
 Green --> C6
 Blue --> C7
 
-Buzzer --> B5
+Buzzer --> A32

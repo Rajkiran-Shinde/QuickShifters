@@ -32,7 +32,7 @@ ExternDep= main.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mod
 ExternDep= mode.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" mode.h  common.h eeprom.h
 
 [Root.Source Files.quickshifter.c.Config.0]
-ExternDep= quickshifter.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h"  quickshifter.h common.h software_timer.h button.h relay.h timer.h mode.h  debug.h
+ExternDep= quickshifter.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h"  quickshifter.h common.h software_timer.h button.h relay.h timer.h mode.h  debug.h buzzer.h
 
 [Root.Source Files.relay.c.Config.0]
 ExternDep= relay.c  "C:\Program Files (x86)\COSMIC\FSE_Compilers\CXSTM8\HSTM8\mods0.h" relay.h  common.h gpio.h config.h debug.h
